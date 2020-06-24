@@ -6,7 +6,6 @@ import os
 from typing import Union
 
 
-def get_env_var(name: str):
 def get_env_var(name: str) -> str:
     """ consumes the name of an environment variable and produces its
 value.  
