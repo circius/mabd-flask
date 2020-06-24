@@ -7,11 +7,9 @@ import airtable
 
 from mabd import utilities
 
-AIRTABLE_API_KEY = utilities.get_env_var("AIRTABLE_API_KEY")
-BASE_ID = utilities.get_env_var("BASE_ID")
-
-TABLE_NAMES = ["deliveries", "requests", "offers", "drivers", "people", "statuses"]
+AIRTABLE_API_KEY = utilities.get_env_var_checked("AIRTABLE_API_KEY")
+BASE = utilities.get_env_var_checked("BASE_ID")
 
 
-def get_all_tables(table_names: List[str]) -> Dict[str, airtable.Airtable]:
-    return {x: lambda x: airtable.Airtable(BASE_ID, x) for x in TABLE_NAMES}
+def get_all_tables(table_names) -> Dict[str, airtable.Airtable]:
+    return {x: airtable.Airtable(BASE, x) for x in table_names}
