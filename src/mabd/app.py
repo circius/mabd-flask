@@ -5,9 +5,11 @@
 import airtable
 from typing import Dict, List, Union
 
-from . import airtable_interface
+from mabd import airtable_interface
 
 TABLE_NAMES = ["deliveries", "requests", "offers", "drivers", "people", "statuses"]
+
+TABLES = airtable_interface.get_all_tables(TABLE_NAMES)
 
 
 def table_names_get_all_data(table_names: List[str]) -> Dict[str, dict]:
