@@ -65,3 +65,257 @@ def request_get_matching_offerIDs(request) -> list:
     return result
 
 
+def deliveryID_do_recursive_fulfilment(deliveryID: str) -> bool:
+    """imperative function. does fulfilment of a delivery, adjusting all
+requests and offers associated with that delivery.
+
+    """
+    # print("marking delivery fulfilled")
+    fulfilled_delivery = deliveryID_fulfil_delivery(deliveryID)
+
+    # also fulfils confirmed offers
+    # print("processing fulfilled requests")
+    requestIDs = deliveryID_get_all_recordIDs(deliveryID)
+    fulfilled_requests = requestIDs_do_recursive_fulfilment(requestIDs)
+
+    return True
+
+
+def deliveryID_get_all_recordIDs(deliveryID: str) -> List:
+    """consumes a deliveryID and produces all the corresponding recordIDs.
+    """
+    delivery = TABLES["deliveries"].get(deliveryID)
+    return delivery_get_all_requestIDs(delivery)
+
+
+def deliveryID_fulfil_delivery(deliveryID: str) -> List:
+    """ consumes a deliveryID and fulfils it on the airtable.
+"""
+    return TABLES["deliveries"].update(deliveryID, {"fulfilled?": True}, typecast=True)
+
+
+def deliveryID_get_delivery(deliveryID: str) -> List:
+    """consumes the id of a row of the Deliveries table and produces the
+corresponding record.
+
+    """
+    return TABLES["deliveries"].get(deliveryID)
+
+
+def deliveryID_mark_requests_fulfilled(deliveryID: str) -> List:
+    """consumes a deliveryID and produces a list of the corresponding
+requests, their statuses all changed to "fulfilled." As a side-effect,
+performs the corresponding change on the airtable.
+
+    """
+    delivery = deliveryID_get_delivery(deliveryID)
+    requestIDs = delivery_get_all_requestIDs(delivery)
+    return requestIDs_do_recursive_fulfilment(requestIDs)
+
+
+def requestIDs_do_recursive_fulfilment(requestIDs: list) -> List:
+    """consumes a [List-of requestIDs] and produces a [List=-of requests]
+in which:
+    1) the status of the request has been set to "fulfilled"
+    2) all the request's matching offers have been removed;
+as a side-effect, it also does this to the corresponding airtable records, and
+marks the confirmed offer of each record as 'fulfilled'.
+"""
+    # side-effects
+    # print(f"marking confirmed offers fulfilled")
+    fulfilled_offers = requestIDs_fulfil_confirmed_offerIDs(requestIDs)
+    # print(f"all fulfilled offers: {fulfilled_offers}")
+    # proper function
+    # print(f"marking requests fulfilled")
+    fulfilled_requests = requestIDs_mark_requests_fulfilled(requestIDs)
+    # print(f"and stripping them of matches")
+    without_matches = requestIDs_remove_matching_offers(requestIDs)
+    # print(f"resulting fulfilled requests::\n {without_matches}")
+    return without_matches
+
+
+def requestIDs_get_confirmed_offerIDs(requestIDs: list) -> List[str]:
+    """consumes a list of requestIDs and produces a list pf the
+corresponding confirmed offerIDs.
+
+    """
+    return [requestID_get_confirmed_offerID(requestID) for requestID in requestIDs]
+
+
+def offerIDs_fulfil_offer(offerIDs: list) -> List:
+    """consumes a [List-of offerIDs] and produces a corresponding [List-of
+offers] in which the status of every offer has been forced to
+'fulfilled'. as a side-effect, produces the same effect in the
+airtable.
+
+    """
+    return [offerID_mark_status_fulfilled(offerID) for offerID in offerIDs]
+
+
+def requestIDs_fulfil_confirmed_offerIDs(requestIDs: list) -> List:
+    """consumes a [List-of requestIDs] and produces a [List-of Offers]
+corresponding to the offers fulfilled by the fulfilment of those
+requests, with their statuses forced to 'fulfilled'. As a side-effect,
+produces this effect on the airtable.
+
+    """
+    offerIDs = [requestID_get_confirmed_offerID(requestID) for requestID in requestIDs]
+    return [offerID_mark_status_fulfilled(offerID) for offerID in offerIDs]
+
+
+def offerID_mark_status_fulfilled(offerID: str) -> List:
+    """consumes an offerID and produces an offer with the status forced to
+"fulfilled". As a side-effect, produces the same effect on the
+airtable.
+
+    """
+    return TABLES["offers"].update(offerID, {"status": "fulfilled"}, typecast=True)
+
+
+def requestID_get_confirmed_offerID(requestID: str) -> Union[str, None]:
+    """ consumes a requestID and gets the corresponding offerID, or None if the offerID isn't set.
+"""
+    request = TABLES["requests"].get(requestID)
+    return request_get_confirmed_offerID(request)
+
+
+def requestIDs_remove_matching_offers(requestIDs: list) -> List:
+    """consumes a list of requestIDs and produces the corresponding
+[List-of requests], with no entries in the 'matching_offers'
+column. As a side-effect, it also updates the airtable accordingly.
+
+    """
+    return [requestID_remove_matching_offers(requestID) for requestID in requestIDs]
+
+
+def requestID_remove_matching_offers(requestID: str) -> List:
+    """consumes a requestID and produces the corresponding request, with
+no entries in the 'matching_offers' column. As a side-effect, it also
+updates the airtable accordingly.
+
+    """
+    return [
+        TABLES["requests"].update(requestID, {"matching_offers": None}, typecast=True)
+    ]
+
+
+def requestIDs_mark_requests_fulfilled(requestIDs: list) -> List:
+    """consumes a [List-of requestIDs] and returns the corresponding
+[List-of requests] with the status forced to 'fulfilled.' As a side
+effect, it also updates the airtable accordingly.
+
+    """
+
+    return [requestID_mark_request_fulfilled(requestID) for requestID in requestIDs]
+
+
+def requestID_mark_request_fulfilled(requestID: str) -> List:
+    """consumes a requestID and returns the corresponding request with
+the status forced to 'fulfilled.' As a side effect, it also updates
+the airtable accordingly.
+
+    """
+    return [
+        TABLES["requests"].update(requestID, {"status": "fulfilled"}, typecast=True)
+    ]
+
+
+def request_get_minimal_representation(request: list) -> dict:
+    """consumes a request and produces a minimal dict representation of it
+with the keys `id` `item` `requested_by` and `status` and with
+human-readable values.
+
+    """
+    try:
+        request_id = request["id"]
+    except:
+        request_id = "couldn't get id"
+        print(f"Couldn't get id for request {request_record}, something is very wrong")
+    fields = request["fields"]
+    try:
+        item = fields["item"]
+    except:
+        item = "Couldn't get item"
+    try:
+        requested_by_record = TABLES["people"].get(fields["requested_by"][0])
+        requested_by = requested_by_record["fields"]["name"]
+    except:
+        requested_by = "Couldn't get name of requester"
+    try:
+        status_record = TABLES["statuses"].get(fields["status"][0])
+        status = status_record["fields"]["name"]
+    except:
+        status = "couldn't get status"
+
+    return {
+        "id": request_id,
+        "item": item,
+        "requested_by": requested_by,
+        "status": status,
+    }
+
+
+def delivery_get_minimal_representation(delivery: list) -> dict:
+    """consumes a delivery and produces a minimal dict representation of
+it with the keys `id`, `to`, `from`, `driver`, and `date`.
+
+    """
+    try:
+        delivery_id = delivery["id"]
+    except:
+        delivery_id = "couldn't get id"
+        print(
+            f"Couldn't get id for delivery {delivery_record}, something is very wrong."
+        )
+    fields = requests["fields"]
+    try:
+        to_record = people.get(fields["to"][0])
+        to = to_record["fields"]["name"]
+    except:
+        to = "couldn't fetch to"
+    try:
+        frm_record = people.get(fields["from"][0])
+        frm = frm_record["fields"]["name"]
+    except:
+        frm = "couldn't fetch from"
+    try:
+        date = fields["date"]
+    except:
+        date = "couldn't fetch date"
+
+    return {"id": request_id, "to": to, "from": frm, "date": date}
+
+
+## pretty printing
+def format_request(request: List) -> str:
+    """ consumes a request and produces a readable representation of it.
+"""
+    readable_request = request_get_minimal_representation(request)
+    request_id, item, requested_by, status = readable_request.values()
+    return f"""Request {request_id}:
+    item: {item}
+    requested_by: {requested_by}
+    status: {status}
+"""
+
+
+def format_delivery(delivery: List) -> str:
+    """ consumes a delivery and produces a readable representation of it.
+"""
+    readable_delivery = delivery_get_minimal_representation(delivery)
+    to, frm, driver, date = readable_delivery.values()
+    return f"""Delivery ID {id}:
+    - to: {to}
+    - from: {frm}
+    - driver: {driver}
+    - date: {date}
+"""
+
+
+if __name__ == "__main__":
+    import sys
+
+    deliveryID = sys.argv[1]
+    print(f"fulfilling delivery {deliveryID}")
+    result = deliveryID_do_recursive_fulfilment(deliveryID)
+    print(f"result: {result}")
