@@ -46,9 +46,11 @@ has one, or None otherwise.
 """
     try:
         result = record_get_fields(request)["confirmed_offer"][0]
-    except ValueError:
-        print(f"No confirmed offer found for request:\n {request}")
-        return None
+    except KeyError:
+        print(
+            f"No confirmed offer found for request:\n {format_request(request)}. \n Aborting."
+        )
+        exit(1)
     return result
 
 
