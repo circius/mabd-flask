@@ -15,6 +15,3 @@ def test_can_get_tables():
     fields = record["fields"]
     for key in ["date", "driver", "dropoff_time"]:
         assert key in fields.keys()
-
-
-    
