@@ -52,15 +52,14 @@ has one, or None otherwise.
     return result
 
 
-def request_get_matching_offerIDs(request) -> Union[list, None]:
-    """ consumes a request record and produces the IDs of its matching offers, if it has any,
-or None otherwise
+def request_get_matching_offerIDs(request) -> list:
+    """ consumes a request record and produces the IDs of its matching offers.
 """
     try:
         result = record_get_fields(request)["matching_offers"]
-    except ValueError:
-        print(f"No matching offers found for request:\n {request}")
-        return None
+    except KeyError:
+        print(f"No matching offers found for request:\n {format_request(request)}")
+        return []
     return result
 
 
