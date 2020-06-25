@@ -18,7 +18,7 @@ produces a Dict whose keys are the names and whose values are the tables.
 
     """
     airtables = airtable_interface.get_all_tables(table_names)
-    print(f"got airtables: {airtables} from base {airtable_interface.BASE}")
+    # print(f"got airtables: {airtables} from base {airtable_interface.BASE}")
     return {key: airtables[key].get_all() for key in airtables.keys()}
 
 
@@ -29,7 +29,7 @@ fulfilled by it, or None.
     try:
         result = record_get_fields(delivery)["requests"]
     except ValueError:
-        print(f"No requests found for delivery:\n {delivery}")
+        # print(f"No requests found for delivery:\n {delivery}")
         return None
     return result
 
