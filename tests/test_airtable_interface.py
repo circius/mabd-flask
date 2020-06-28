@@ -1,10 +1,6 @@
 from mabd import airtable_interface
 
 
-def test_can_get_list_of_unfulfilled_deliveries(monkeypatch):
-    monkeypatch.setenv("BASE_ID", "appGDD6qBhKjufAIO")
-
-
 def test_can_get_tables():
     some_table_names = ["deliveries", "requests", "drivers"]
     some_tables = airtable_interface.get_all_tables(some_table_names)
