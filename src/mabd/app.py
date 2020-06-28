@@ -12,6 +12,12 @@ TABLE_NAMES = ["deliveries", "requests", "offers", "drivers", "people", "statuse
 TABLES = airtable_interface.get_all_tables(TABLE_NAMES)
 
 
+def get_unfulfilled_delivery_records() -> List:
+    """ consumes nothing and gets all unfulfilled deliveries from the airtable.
+"""
+    return TABLES["deliveries"].get_all(view="unfulfilled deliveries")
+
+
 def table_names_get_all_data(table_names: List[str]) -> Dict[str, dict]:
     """consumes a list of names of tables within an airtable base and
 produces a Dict whose keys are the names and whose values are the tables.
@@ -63,6 +69,22 @@ def request_get_matching_offerIDs(request) -> list:
         print(f"No matching offers found for request:\n {format_request(request)}")
         return []
     return result
+
+
+def do_delivery_fulfilment(delivery_number: int) -> bool:
+    """imperative function. does fulfilment of a delivery specified by its
+number, adjusting all requests and offers associated with that
+delivery.
+
+    """
+    delivery_record = TABLES["deliveries"].match(
+        "id", delivery_number, view="unfulfilled deliveries"
+    )
+    try:
+        deliveryID = delivery_record["id"]
+    except KeyError:
+        return False
+    return deliveryID_do_recursive_fulfilment(deliveryID)
 
 
 def deliveryID_do_recursive_fulfilment(deliveryID: str) -> bool:
@@ -255,35 +277,46 @@ human-readable values.
     }
 
 
-def delivery_get_minimal_representation(delivery: list) -> dict:
+def delivery_get_minimal_representation(delivery) -> dict:
     """consumes a delivery and produces a minimal dict representation of
-it with the keys `id`, `to`, `from`, `driver`, and `date`.
+it with the keys `id`, `to`, `from`, `driver`, and `date`, with human-readable
+values.
 
     """
     try:
-        delivery_id = delivery["id"]
+        record_id = delivery["id"]
     except:
-        delivery_id = "couldn't get id"
-        print(
-            f"Couldn't get id for delivery {delivery_record}, something is very wrong."
-        )
-    fields = requests["fields"]
+        record_id = "couldn't get id"
+        print(f"Couldn't get id for delivery {delivery}, something is very wrong.")
+    fields = record_get_fields(delivery)
+    delivery_id = fields["id"]
     try:
-        to_record = people.get(fields["to"][0])
+        to_record = TABLES["people"].get(fields["to"][0])
         to = to_record["fields"]["name"]
     except:
         to = "couldn't fetch to"
     try:
-        frm_record = people.get(fields["from"][0])
+        frm_record = TABLES["people"].get(fields["from"][0])
         frm = frm_record["fields"]["name"]
     except:
         frm = "couldn't fetch from"
+    try:
+        driver_record = TABLES["drivers"].get(fields["driver"][0])
+        driver = driver_record["fields"]["name"]
+    except:
+        driver = "couldn't fetch driver."
     try:
         date = fields["date"]
     except:
         date = "couldn't fetch date"
 
-    return {"id": request_id, "to": to, "from": frm, "date": date}
+    return {
+        "delivery_id": delivery_id,
+        "to": to,
+        "from": frm,
+        "driver": driver,
+        "date": date,
+    }
 
 
 ## pretty printing
@@ -299,12 +332,12 @@ def format_request(request: List) -> str:
 """
 
 
-def format_delivery(delivery: List) -> str:
+def format_delivery(delivery) -> str:
     """ consumes a delivery and produces a readable representation of it.
 """
     readable_delivery = delivery_get_minimal_representation(delivery)
-    to, frm, driver, date = readable_delivery.values()
-    return f"""Delivery ID {id}:
+    delivery_id, to, frm, driver, date = readable_delivery.values()
+    return f"""Delivery {delivery_id}:
     - to: {to}
     - from: {frm}
     - driver: {driver}
