@@ -11,6 +11,9 @@ class TestData(object):
     def __init__(self):
         self.data = self._get_raw_testdata()
 
+    def __getitem__(self, item):
+        return self.get_table(item)
+
     # private methods
 
     def _get_raw_testdata(self) -> dict:
@@ -38,7 +41,7 @@ class TestTable(object):
     def __init__(self, table_dict):
         self.table_dict = table_dict
 
-    def get_all(self) -> List[TestRecord]:
+    def get_all(self, view=None) -> List[TestRecord]:
         """consumes nothing and produces a list of all TestRecords.
 
         """
@@ -55,7 +58,7 @@ or None if no suc record is found.
         return None
 
     def match(self, field_name, value) -> Union[TestRecord, None]:
-        """consumes nothing and produces the first record with field_name
+        """consumes nothing and produces thetox first record with field_name
 equal to value, or None.
 
         """
@@ -64,6 +67,21 @@ equal to value, or None.
             if record.get_record_field(field_name) is value:
                 return record
         return None
+
+    def update(self, record_id, update_dict, **kwargs):
+        """consumes a record_id and an update_dict and returns the
+corresponding record with each field corresponding to a key in the
+dict updated to the corresponding value.
+
+        as a side-effect, produces the same effect in the record
+        stored in the table.
+
+        """
+        record = self.get(record_id)
+        for key in update_dict.keys():
+            value = update_dict[key]
+            record = record.set_field(key, value)
+        return record
 
 
 class TestRecord(object):
@@ -94,3 +112,7 @@ class TestRecord(object):
 
     def get_field(self, field_name):
         return self.record_dict["fields"][field_name]
+
+    def set_field(self, field_name, value) -> dict:
+        self.record_dict["fields"][field_name] = value
+        return self.record_dict

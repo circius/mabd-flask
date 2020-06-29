@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # -*- coding: utf-8 -*-
 """ encapsulates functions for parsing and adjusting Airtable objects
 
@@ -20,10 +22,64 @@ class MABD(object):
         ]
         self.TABLES = airtable_interface.get_all_tables(self.TABLE_NAMES)
 
-    def get_unfulfilled_delivery_records(self) -> List:
+    #     self.FULFILLED = self.TABLES['statuses'].match('name', 'fulfilled')['id']
+
+    # def get_fulfilled_id(self):
+    #     return self.FULFILLED
+
+    def update_delivery(self, delivery_id: str, update_dict: dict) -> Delivery:
+        """consume a delivery_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        delivery_dict = self.update_record_in_table(
+            "deliveries", delivery_id, update_dict
+        )
+        return Delivery(delivery_dict)
+
+    def update_request(self, request_id: str, update_dict: dict) -> Request:
+        """consume a request_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        request_dict = self.update_record_in_table("requests", request_id, update_dict)
+        return Request(request_dict)
+
+    def update_record_in_table(
+        self, table_name: str, record_id: str, update_dict: dict
+    ) -> dict:
+        """I consume the name of a table, the id of a record in that table,
+and an update_dict, and produce a copy of the corresponding record
+with all fields corresponding to keys in the dict updated to the
+corresponding values; as a side-effect, I produce this effect on the
+airtable.
+
+
+        """
+        airtable = self.get_airtable(table_name)
+        return airtable.update(record_id, update_dict, typecast=True)
+
+    def update_offer(self, offer_id: str, update_dict: dict) -> Offer:
+        """consume a offer_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        offer_dict = self.update_record_in_table("offers", offer_id, update_dict)
+        return Offer(offer_dict)
+
+    def get_unfulfilled_delivery_records(self) -> List[Delivery]:
         """ consumes nothing and gets all unfulfilled deliveries from the airtable.
             """
-        return self.TABLES["deliveries"].get_all(view="unfulfilled deliveries")
+        delivery_dicts = self.get_airtable("deliveries").get_all(
+            view="unfulfilled deliveries"
+        )
+        return [Delivery(delivery_dict) for delivery_dict in delivery_dicts]
 
     def delivery_get_all_requestIDs(self, delivery) -> Union[List[str], None]:
         """consumes a delivery Record and produces a list of the IDs of the requests
@@ -36,6 +92,45 @@ class MABD(object):
                 print(f"No requests found for delivery:\n {delivery}")
                 return None
         return result
+
+    def get_airtable(self, table_name: str) -> airtable.Airtable:
+        """ consume the name of a table and produce the corresponding airtable.
+"""
+        return self.TABLES[table_name]
+
+    def get_delivery_by_number(self, delivery_number: int) -> Delivery:
+        """ consumes a delivery number and produces the corresponding delivery.
+"""
+        return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
+
+    def get_request_by_id(self, request_id: str) -> Request:
+        """consume a request_id and produce the corresponding Request from
+the requests table.
+
+        """
+        return Request(self.get_airtable("requests").get(request_id))
+
+    def get_offer_by_id(self, offer_id: str) -> Offer:
+        """" consume an offer_id and produce the corresponding Offer from the
+offers table.
+
+        """
+        offer_dict = self.get_airtable("offers").get(offer_id)
+        # print(self.get_airtable("offers").get_all())
+        return Offer(offer_dict)
+
+    def delivery_get_minimal_representation(self, delivery: Delivery) -> dict:
+        """consumes a Delivery and produces a minimal dict representation of
+        it with the keys `id`, `to`, `from`, `driver`, and `date`, with human-readable
+        values.
+        
+        """
+        return delivery.get_minimal_representation(self)
+
+    def get_pprinted_delivery(self, delivery: Delivery) -> str:
+        """ consumes a delivery_dict and pretty-prints it.
+"""
+        return delivery.pprint(self)
 
     def record_get_fields(self, record) -> List:
         """consumes an airtable Record and produces its fields.
@@ -64,295 +159,169 @@ class MABD(object):
             return []
         return result
 
-
-def table_names_get_all_data(table_names: List[str]) -> Dict[str, dict]:
-    """consumes a list of names of tables within an airtable base and
-produces a Dict whose keys are the names and whose values are the tables.
-
-    """
-    airtables = airtable_interface.get_all_tables(table_names)
-    # print(f"got airtables: {airtables} from base {airtable_interface.BASE}")
-    return {key: airtables[key].get_all() for key in airtables.keys()}
-
-
-def do_delivery_fulfilment(delivery_number: int) -> bool:
-    """imperative function. does fulfilment of a delivery specified by its
-number, adjusting all requests and offers associated with that
-delivery.
-
-    """
-    delivery_record = TABLES["deliveries"].match(
-        "id", delivery_number, view="unfulfilled deliveries"
-    )
-    try:
-        deliveryID = delivery_record["id"]
-    except KeyError:
-        return False
-    return deliveryID_do_recursive_fulfilment(deliveryID)
+    def do_delivery_fulfilment(self, delivery_number: int) -> bool:
+        """does fulfilment of a delivery specified by its
+        number, adjusting all requests and offers associated with that
+        delivery.
+        
+        """
+        delivery_dict = self.get_airtable("deliveries").match("id", delivery_number)
+        delivery = Delivery(delivery_dict)
+        return delivery.do_fulfilment(self)
 
 
-def deliveryID_do_recursive_fulfilment(deliveryID: str) -> bool:
-    """imperative function. does fulfilment of a delivery, adjusting all
-requests and offers associated with that delivery.
+class Record(object):
+    def __init__(self, record_dict: dict):
+        self._record_dict = record_dict
+        self._record_id = record_dict["id"]
+        self._fields = record_dict["fields"]
 
-    """
-    # print("marking delivery fulfilled")
-    fulfilled_delivery = deliveryID_fulfil_delivery(deliveryID)
+    def __getitem__(self, item):
+        return self.get_field(item)
 
-    # also fulfils confirmed offers
-    # print("processing fulfilled requests")
-    requestIDs = deliveryID_get_all_recordIDs(deliveryID)
-    fulfilled_requests = requestIDs_do_recursive_fulfilment(requestIDs)
+    def get_id(self):
+        return self._record_id
 
-    return True
+    def get_field(self, field_name):
+        return self._fields[field_name]
 
-
-def deliveryID_get_all_recordIDs(deliveryID: str) -> List:
-    """consumes a deliveryID and produces all the corresponding recordIDs.
-    """
-    delivery = TABLES["deliveries"].get(deliveryID)
-    return delivery_get_all_requestIDs(delivery)
+    def get_columns(self):
+        return self._fields.keys()
 
 
-def deliveryID_fulfil_delivery(deliveryID: str) -> List:
-    """ consumes a deliveryID and fulfils it on the airtable.
+class Offer(Record):
+    def do_fulfilment(self, mabd: MABD) -> Offer:
+        """ consume an mabd-state, and produce myself with 
+my status set to 'fulfilled'. as a side-effect, produce this 
+effect on the airtable.
 """
-    return TABLES["deliveries"].update(deliveryID, {"fulfilled?": True}, typecast=True)
+        fulfilled_offer = self._set_field(mabd, "status", "fulfilled")
+        return fulfilled_offer
+
+    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Request:
+        """ consume an mabd-state, a field_name and a value, and produce a copy of myself
+        with the corresponding field set to that value.
+
+        As a side-effect, produce this effect on the mabd-state.
+        """
+        return mabd.update_offer(self.get_id(), {field_name: [value]})
 
 
-def deliveryID_get_delivery(deliveryID: str) -> List:
-    """consumes the id of a row of the Deliveries table and produces the
-corresponding record.
-
-    """
-    return TABLES["deliveries"].get(deliveryID)
-
-
-def deliveryID_mark_requests_fulfilled(deliveryID: str) -> List:
-    """consumes a deliveryID and produces a list of the corresponding
-requests, their statuses all changed to "fulfilled." As a side-effect,
-performs the corresponding change on the airtable.
-
-    """
-    delivery = deliveryID_get_delivery(deliveryID)
-    requestIDs = delivery_get_all_requestIDs(delivery)
-    return requestIDs_do_recursive_fulfilment(requestIDs)
-
-
-def requestIDs_do_recursive_fulfilment(requestIDs: list) -> List:
-    """consumes a [List-of requestIDs] and produces a [List=-of requests]
-in which:
-    1) the status of the request has been set to "fulfilled"
-    2) all the request's matching offers have been removed;
-as a side-effect, it also does this to the corresponding airtable records, and
-marks the confirmed offer of each record as 'fulfilled'.
+class Request(Record):
+    def do_fulfilment(self, mabd: MABD) -> Request:
+        """ consume an mabd-state, and produce myself with 
+          1. my status set to 'fulfilled'.
+          2. with all of my "matching offers" removed
+        as a side-effect, produce this effect on the airtable.
+        also:
+          3. set the status of all of my "confirmed offers" to "fulfilled".
 """
-    # side-effects
-    # print(f"marking confirmed offers fulfilled")
-    fulfilled_offers = requestIDs_fulfil_confirmed_offerIDs(requestIDs)
-    # print(f"all fulfilled offers: {fulfilled_offers}")
-    # proper function
-    # print(f"marking requests fulfilled")
-    fulfilled_requests = requestIDs_mark_requests_fulfilled(requestIDs)
-    # print(f"and stripping them of matches")
-    without_matches = requestIDs_remove_matching_offers(requestIDs)
-    # print(f"resulting fulfilled requests::\n {without_matches}")
-    return without_matches
+        fulfilled_request = self._set_field(mabd, "status", "fulfilled")
+        without_matches = fulfilled_request._set_field(mabd, "matching_offers", [])
+
+        try:
+            confirmed_offerID = self.get_field("confirmed_offer")[0]
+            confirmed_offer = mabd.get_offer_by_id(confirmed_offerID)
+            confirmed_offer_fulfilled = confirmed_offer.do_fulfilment(mabd)
+        except KeyError as e:
+            print(f"{e}\n Request {self.get_id()} has no confirmed offers.")
+
+        return without_matches
+
+    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Request:
+        """ consume an mabd-state, a field_name and a value, and produce a copy of myself
+        with the corresponding field set to that value.
+
+        As a side-effect, produce this effect on the mabd-state.
+        """
+        updated_request = mabd.update_request(self.get_id(), {field_name: value})
+        return updated_request
 
 
-def requestIDs_get_confirmed_offerIDs(requestIDs: list) -> List[str]:
-    """consumes a list of requestIDs and produces a list pf the
-corresponding confirmed offerIDs.
+class Delivery(Record):
+    def do_fulfilment(self, mabd: MABD) -> Delivery:
+        """consume an mabd-state, and produce myself with my 'fulfilment' status set to 'true'.
+as a side-effect, produce this effect on the airtable.
+        also:
+        1. set the status of all requests associated with the delivery to 'fulfilled'
+        2. set the status of all "confirmed offers" for those requests to 'fulfilled'.
+        3. remove all 'matching offers' from those requests.
 
-    """
-    return [requestID_get_confirmed_offerID(requestID) for requestID in requestIDs]
+        """
+        self._set_field(mabd, "fulfilled?", True)
+        request_ids = self.get_field("requests")
+        requests_fulfilled = [mabd.get_request_by_id(r_id) for r_id in request_ids]
+        for request in requests_fulfilled:
+            request.do_fulfilment(mabd)
+        return self
 
+    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Delivery:
+        """consume an mabd-state, a field_name and a value, and produce a
+        copy of myself with the corresponding field set to that
+        value. as a side-effect, produce this effect on the mabd-state.
 
-def offerIDs_fulfil_offer(offerIDs: list) -> List:
-    """consumes a [List-of offerIDs] and produces a corresponding [List-of
-offers] in which the status of every offer has been forced to
-'fulfilled'. as a side-effect, produces the same effect in the
-airtable.
+        """
+        return mabd.update_record_in_table(
+            "deliveries", self.get_id(), {field_name: value}
+        )
 
-    """
-    return [offerID_mark_status_fulfilled(offerID) for offerID in offerIDs]
+    def pprint(self, mabd: MABD) -> str:
+        """ produce a readable representation of myself, based on the 
+        contents of other tables in the MABD.
+        """
+        readable_delivery = self.get_minimal_representation(mabd)
+        delivery_id, to, frm, driver, date = readable_delivery.values()
+        return f"""Delivery {delivery_id}:
+        - to: {to}
+        - from: {frm}
+        - driver: {driver}
+        - date: {date}
+        """
 
+    def get_minimal_representation(self, mabd: MABD):
+        people_airtable = mabd.get_airtable("people")
+        drivers_airtable = mabd.get_airtable("drivers")
 
-def requestIDs_fulfil_confirmed_offerIDs(requestIDs: list) -> List:
-    """consumes a [List-of requestIDs] and produces a [List-of Offers]
-corresponding to the offers fulfilled by the fulfilment of those
-requests, with their statuses forced to 'fulfilled'. As a side-effect,
-produces this effect on the airtable.
+        delivery_number = self.get_field("id")
+        try:
+            to_record = Record(people_airtable.get(self.get_field("to")[0]))
+            to = to_record.get_field("name")
+        except:
+            to = "couldn't fetch to"
+        try:
+            frm_record = Record(people_airtable.get(self.get_field("from")[0]))
+            frm = frm_record.get_field("name")
+        except:
+            frm = "couldn't fetch from"
+        try:
+            driver_record = Record(drivers_airtable.get(self.get_field("driver")[0]))
+            driver = driver_record.get_field("name")
+        except:
+            driver = "couldn't fetch driver"
+        date = self.get_field("date")
 
-    """
-    offerIDs = [requestID_get_confirmed_offerID(requestID) for requestID in requestIDs]
-    return [offerID_mark_status_fulfilled(offerID) for offerID in offerIDs]
-
-
-def offerID_mark_status_fulfilled(offerID: str) -> List:
-    """consumes an offerID and produces an offer with the status forced to
-"fulfilled". As a side-effect, produces the same effect on the
-airtable.
-
-    """
-    return TABLES["offers"].update(offerID, {"status": "fulfilled"}, typecast=True)
-
-
-def requestID_get_confirmed_offerID(requestID: str) -> Union[str, None]:
-    """ consumes a requestID and gets the corresponding offerID, or None if the offerID isn't set.
-"""
-    request = TABLES["requests"].get(requestID)
-    return request_get_confirmed_offerID(request)
-
-
-def requestIDs_remove_matching_offers(requestIDs: list) -> List:
-    """consumes a list of requestIDs and produces the corresponding
-[List-of requests], with no entries in the 'matching_offers'
-column. As a side-effect, it also updates the airtable accordingly.
-
-    """
-    return [requestID_remove_matching_offers(requestID) for requestID in requestIDs]
-
-
-def requestID_remove_matching_offers(requestID: str) -> List:
-    """consumes a requestID and produces the corresponding request, with
-no entries in the 'matching_offers' column. As a side-effect, it also
-updates the airtable accordingly.
-
-    """
-    return [
-        TABLES["requests"].update(requestID, {"matching_offers": None}, typecast=True)
-    ]
-
-
-def requestIDs_mark_requests_fulfilled(requestIDs: list) -> List:
-    """consumes a [List-of requestIDs] and returns the corresponding
-[List-of requests] with the status forced to 'fulfilled.' As a side
-effect, it also updates the airtable accordingly.
-
-    """
-
-    return [requestID_mark_request_fulfilled(requestID) for requestID in requestIDs]
-
-
-def requestID_mark_request_fulfilled(requestID: str) -> List:
-    """consumes a requestID and returns the corresponding request with
-the status forced to 'fulfilled.' As a side effect, it also updates
-the airtable accordingly.
-
-    """
-    return [
-        TABLES["requests"].update(requestID, {"status": "fulfilled"}, typecast=True)
-    ]
-
-
-def request_get_minimal_representation(request: list) -> dict:
-    """consumes a request and produces a minimal dict representation of it
-with the keys `id` `item` `requested_by` and `status` and with
-human-readable values.
-
-    """
-    try:
-        request_id = request["id"]
-    except:
-        request_id = "couldn't get id"
-        print(f"Couldn't get id for request {request_record}, something is very wrong")
-    fields = request["fields"]
-    try:
-        item = fields["item"]
-    except:
-        item = "Couldn't get item"
-    try:
-        requested_by_record = TABLES["people"].get(fields["requested_by"][0])
-        requested_by = requested_by_record["fields"]["name"]
-    except:
-        requested_by = "Couldn't get name of requester"
-    try:
-        status_record = TABLES["statuses"].get(fields["status"][0])
-        status = status_record["fields"]["name"]
-    except:
-        status = "couldn't get status"
-
-    return {
-        "id": request_id,
-        "item": item,
-        "requested_by": requested_by,
-        "status": status,
-    }
-
-
-def delivery_get_minimal_representation(delivery) -> dict:
-    """consumes a delivery and produces a minimal dict representation of
-it with the keys `id`, `to`, `from`, `driver`, and `date`, with human-readable
-values.
-
-    """
-    try:
-        record_id = delivery["id"]
-    except:
-        record_id = "couldn't get id"
-        print(f"Couldn't get id for delivery {delivery}, something is very wrong.")
-    fields = record_get_fields(delivery)
-    delivery_id = fields["id"]
-    try:
-        to_record = TABLES["people"].get(fields["to"][0])
-        to = to_record["fields"]["name"]
-    except:
-        to = "couldn't fetch to"
-    try:
-        frm_record = TABLES["people"].get(fields["from"][0])
-        frm = frm_record["fields"]["name"]
-    except:
-        frm = "couldn't fetch from"
-    try:
-        driver_record = TABLES["drivers"].get(fields["driver"][0])
-        driver = driver_record["fields"]["name"]
-    except:
-        driver = "couldn't fetch driver."
-    try:
-        date = fields["date"]
-    except:
-        date = "couldn't fetch date"
-
-    return {
-        "delivery_id": delivery_id,
-        "to": to,
-        "from": frm,
-        "driver": driver,
-        "date": date,
-    }
-
-
-## pretty printing
-def format_request(request: List) -> str:
-    """ consumes a request and produces a readable representation of it.
-"""
-    readable_request = request_get_minimal_representation(request)
-    request_id, item, requested_by, status = readable_request.values()
-    return f"""Request {request_id}:
-    item: {item}
-    requested_by: {requested_by}
-    status: {status}
-"""
-
-
-def format_delivery(delivery) -> str:
-    """ consumes a delivery and produces a readable representation of it.
-"""
-    readable_delivery = delivery_get_minimal_representation(delivery)
-    delivery_id, to, frm, driver, date = readable_delivery.values()
-    return f"""Delivery {delivery_id}:
-    - to: {to}
-    - from: {frm}
-    - driver: {driver}
-    - date: {date}
-"""
+        return {
+            "delivery_number": delivery_number,
+            "to": to,
+            "from": frm,
+            "driver": driver,
+            "date": date,
+        }
 
 
 if __name__ == "__main__":
     import sys
 
-    deliveryID = sys.argv[1]
-    print(f"fulfilling delivery {deliveryID}")
-    result = deliveryID_do_recursive_fulfilment(deliveryID)
+    interface = MABD()
+    if len(sys.argv) == 1:
+        unfulfilled = interface.get_unfulfilled_delivery_records()
+        readable_unfulfilled = [
+            interface.get_pprinted_delivery(delivery) for delivery in unfulfilled
+        ]
+        for delivery in readable_unfulfilled:
+            print(delivery)
+        exit(0)
+    delivery_number = sys.argv[1]
+    print(f"fulfilling delivery with number {delivery_number}")
+    result = interface.do_delivery_fulfilment(delivery_number)
     print(f"result: {result}")
