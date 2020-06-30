@@ -242,6 +242,12 @@ class Request(Record):
 
 
 class Delivery(Record):
+    def __str__(self):
+        return f"""Delivery with:
+  - record_id: {self._record_id}
+  - number: {self.get_delivery_number()} and 
+  - fulfilment: {self.get_fulfilment()}.
+"""
     def do_fulfilment(self, mabd: MABD) -> Delivery:
         """consume an mabd-state, and produce myself with my 'fulfilment' status set to 'true'.
 as a side-effect, produce this effect on the airtable.
