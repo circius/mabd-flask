@@ -29,7 +29,7 @@ deliveries, represented as strings.
     return [interface.get_pprinted_delivery(delivery) for delivery in deliveries]
 
 
-def do_delivery_fulfilment(delivery_id: str) -> bool:
+def do_delivery_fulfilment(delivery_id: str) -> Delivery:
     """consumes the value of the delivery_id column of a delivery and
 produces True if if this succeedsm false otherwise. As a side-effect, processes
 all of the requests and offers associated with the delivery.
