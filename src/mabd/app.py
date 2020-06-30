@@ -182,8 +182,11 @@ class Record(object):
     def get_id(self):
         return self._record_id
 
-    def get_field(self, field_name):
-        return self._fields[field_name]
+    def get_field(self, field_name, default=None):
+        try:
+            return self._fields[field_name]
+        except KeyError:
+            return default
 
     def get_columns(self):
         return self._fields.keys()
