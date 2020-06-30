@@ -248,6 +248,10 @@ class Delivery(Record):
   - number: {self.get_delivery_number()} and 
   - fulfilment: {self.get_fulfilment()}.
 """
+
+    def get_fulfilment(self) -> bool:
+        return self.get_field("fulfilled?", False)
+
     def do_fulfilment(self, mabd: MABD) -> Delivery:
         """consume an mabd-state, and produce myself with my 'fulfilment' status set to 'true'.
 as a side-effect, produce this effect on the airtable.
