@@ -14,6 +14,9 @@ class TestData(object):
     def __getitem__(self, item):
         return self.get_table(item)
 
+    def keys(self):
+        return self.get_table_names()
+
     # private methods
 
     def _get_raw_testdata(self) -> dict:
