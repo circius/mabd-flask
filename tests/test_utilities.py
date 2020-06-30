@@ -2,6 +2,7 @@ import pytest
 
 from mabd import utilities
 
+
 def test_get_env_var_can_get_arbitrary_env_var(monkeypatch):
     monkeypatch.setenv("KEY", "nonsense")
     value = utilities.get_env_var("KEY")
