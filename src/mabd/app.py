@@ -195,7 +195,7 @@ class Record(object):
     def get_id(self):
         return self._record_id
 
-    def get_field(self, field_name, default=None):
+    def get_field(self, field_name, default=[]) -> list:
         try:
             return self._fields[field_name]
         except KeyError:
