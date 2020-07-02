@@ -177,7 +177,7 @@ class Record(object):
         self._fields = record_dict["fields"]
 
     def __getitem__(self, item):
-        return self.get_field(item)
+        return self._record_dict[item]
 
     def get_id(self):
         return self._record_id
