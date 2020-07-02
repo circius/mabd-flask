@@ -118,5 +118,9 @@ class TestRecord(object):
         return self.record_dict["fields"][field_name]
 
     def set_field(self, field_name, value) -> dict:
-        self.record_dict["fields"][field_name] = value
+        NOTHING = [None, False, []]
+        if value in NOTHING:
+            del self.record_dict["fields"][field_name]
+        else:
+            self.record_dict["fields"][field_name] = value
         return self.record_dict
