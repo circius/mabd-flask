@@ -1,9 +1,6 @@
-"""this code is derived from the testing suite for the
-airtable-python-wrapper library, adapted to test this partcular
-application.
-
-"""
 import pytest
+
+from mabd.flask_interface import create_app
 
 
 @pytest.fixture(autouse=True)
@@ -15,3 +12,16 @@ def mock_get_all_tables(monkeypatch):
         return TD()
 
     monkeypatch.setattr(airtable_interface, "get_all_tables", mock_get_all_tables)
+
+
+@pytest.fixture
+def app():
+    """ create and configure a new flask app instance for each test.
+"""
+    app = create_app({"TESTING": True})
+    yield app
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
