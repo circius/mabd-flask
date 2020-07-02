@@ -21,6 +21,7 @@ class MABD(object):
             "statuses",
         ]
         self.TABLES = airtable_interface.get_all_tables(self.TABLE_NAMES)
+        self._verbose = verbose
 
     #     self.FULFILLED = self.TABLES['statuses'].match('name', 'fulfilled')['id']
 
