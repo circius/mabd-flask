@@ -82,17 +82,6 @@ this effect on the airtable.
         )
         return [Delivery(delivery_dict) for delivery_dict in delivery_dicts]
 
-    def delivery_get_all_requestIDs(self, delivery) -> list:
-        """consumes a delivery Record and produces a list of the IDs of the requests
-            fulfilled by it.
-        """
-        delivery_fields = self.record_get_fields(delivery)
-        try:
-            result = delivery_fields["requests"]
-        except KeyError as e:
-            return []
-        return result
-
     def get_airtable(self, table_name: str) -> airtable.Airtable:
         """ consume the name of a table and produce the corresponding airtable.
 """
@@ -103,13 +92,20 @@ this effect on the airtable.
 """
         return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
 
-    def get_record_from_table_by_id(self, table_name: str, record_id: str) -> Record:
+    def get_record_from_table_by_id(
+        self, table_name: str, record_id: str
+    ) -> Union[Record, None]:
         """consumes a table-name and a record_id and produces the
-corresponding Record.
+corresponding Record, or None.
 
         """
         constructors = {"deliveries": Delivery, "requests": Request, "offers": Offer}
-        record_dict = self.get_airtable(table_name).get(record_id)
+        table = self.get_airtable(table_name)
+
+        record_dict = table.get(record_id)
+
+        if record_dict is None:
+            return None
 
         if table_name in constructors.keys():
             return constructors[table_name](record_dict)
@@ -129,7 +125,6 @@ offers table.
 
         """
         offer_dict = self.get_airtable("offers").get(offer_id)
-        # print(self.get_airtable("offers").get_all())
         return Offer(offer_dict)
 
     def delivery_get_minimal_representation(self, delivery: Delivery) -> dict:
@@ -144,33 +139,6 @@ offers table.
         """ consumes a delivery_dict and pretty-prints it.
 """
         return delivery.pprint(self)
-
-    def record_get_fields(self, record) -> List:
-        """consumes an airtable Record and produces its fields.
-        """
-        return record["fields"]
-
-    def request_get_confirmed_offerID(self, request) -> Union[str, None]:
-        """ consumes a request Record and produces the ID of its confirmed offer, if it
-    has one, or None otherwise.
-        """
-        try:
-            result = self.record_get_fields(request)["confirmed_offer"][0]
-        except KeyError:
-            raise KeyError(
-                f"No confirmed offer found for request:\n {format_request(request)}. \n Aborting."
-            )
-        return result
-
-    def request_get_matching_offerIDs(self, request) -> list:
-        """ consumes a request record and produces the IDs of its matching offers.
-        """
-        try:
-            result = self.record_get_fields(request)["matching_offers"]
-        except KeyError:
-            print(f"No matching offers found for request:\n {format_request(request)}")
-            return []
-        return result
 
     def do_delivery_fulfilment(self, delivery_number: int) -> bool:
         """does fulfilment of a delivery specified by its
@@ -224,6 +192,27 @@ effect on the airtable.
 
 
 class Request(Record):
+
+    # def record_get_fields(self, record) -> List:
+    #     """consumes an airtable Record and produces its fields.
+    #     """
+    #     return record["fields"]
+
+    def get_confirmed_offerID(self) -> Union[str, None]:
+        """ I produce my confirmed offer, if I have one, or raise a KeyError and return None if not.
+        """
+        result = self.get_field("confirmed_offer")
+
+        if result == []:
+            return None
+        else:
+            return result.pop()
+
+    def get_matching_offerIDs(self) -> list:
+        """ I produce the list of my matching offers.
+        """
+        return self.get_field("matching_offers")
+
     def do_fulfilment(self, mabd: MABD) -> Request:
         """ consume an mabd-state, and produce myself with 
           1. my status set to 'fulfilled'.
@@ -235,12 +224,9 @@ class Request(Record):
         fulfilled_request = self._set_field(mabd, "status", "fulfilled")
         without_matches = fulfilled_request._set_field(mabd, "matching_offers", [])
 
-        try:
-            confirmed_offerID = self.get_field("confirmed_offer")[0]
-            confirmed_offer = mabd.get_offer_by_id(confirmed_offerID)
-            confirmed_offer_fulfilled = confirmed_offer.do_fulfilment(mabd)
-        except KeyError as e:
-            print(f"{e}\n Request {self.get_id()} has no confirmed offers.")
+        confirmed_offerID = self.get_confirmed_offerID()
+        confirmed_offer = mabd.get_offer_by_id(confirmed_offerID)
+        confirmed_offer_fulfilled = confirmed_offer.do_fulfilment(mabd)
 
         return without_matches
 
@@ -259,8 +245,18 @@ class Delivery(Record):
         return f"""Delivery with:
   - record_id: {self._record_id}
   - number: {self.get_delivery_number()} and 
-  - fulfilment: {self.get_fulfilment()}.
+  - fulfilled?: {self.get_fulfilment()}.
 """
+
+    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Delivery:
+        """consume an mabd-state, a field_name and a value, and produce a
+        copy of myself with the corresponding field set to that
+        value. as a side-effect, produce this effect on the mabd-state.
+
+        """
+        return mabd.update_record_in_table(
+            "deliveries", self.get_id(), {field_name: value}
+        )
 
     def get_fulfilment(self) -> bool:
         return self.get_field("fulfilled?", False)
@@ -284,15 +280,11 @@ as a side-effect, produce this effect on the airtable.
             request.do_fulfilment(mabd)
         return self
 
-    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Delivery:
-        """consume an mabd-state, a field_name and a value, and produce a
-        copy of myself with the corresponding field set to that
-        value. as a side-effect, produce this effect on the mabd-state.
+    def get_all_requestIDs(self) -> list:
+        """ I produce a list of all the requests fulfilled by me.
+            """
 
-        """
-        return mabd.update_record_in_table(
-            "deliveries", self.get_id(), {field_name: value}
-        )
+        return self.get_field("requests")
 
     def pprint(self, mabd: MABD) -> str:
         """ produce a readable representation of myself, based on the 
@@ -307,26 +299,31 @@ as a side-effect, produce this effect on the airtable.
         - date: {date}
         """
 
-    def get_minimal_representation(self, mabd: MABD):
-        people_airtable = mabd.get_airtable("people")
-        drivers_airtable = mabd.get_airtable("drivers")
+    def get_records_from_table_for_ids_in_field(
+        self, field_name, table, mabd: MABD
+    ) -> List[Record]:
+        record_ids = self.get_field(field_name)
+        return [
+            mabd.get_record_from_table_by_id(table, record_id)
+            for record_id in record_ids
+        ]
 
+    def get_minimal_representation(self, mabd: MABD):
         delivery_number = self.get_field("id")
-        try:
-            to_record = Record(people_airtable.get(self.get_field("to")[0]))
-            to = to_record.get_field("name")
-        except:
-            to = "couldn't fetch to"
-        try:
-            frm_record = Record(people_airtable.get(self.get_field("from")[0]))
-            frm = frm_record.get_field("name")
-        except:
-            frm = "couldn't fetch from"
-        try:
-            driver_record = Record(drivers_airtable.get(self.get_field("driver")[0]))
-            driver = driver_record.get_field("name")
-        except:
-            driver = "couldn't fetch driver"
+
+        to_records = self.get_records_from_table_for_ids_in_field("to", "people", mabd)
+        to = ", ".join([record.get_field("name") for record in to_records])
+
+        frm_records = self.get_records_from_table_for_ids_in_field(
+            "from", "people", mabd
+        )
+        frm = ", ".join([record.get_field("name") for record in frm_records])
+
+        driver_records = self.get_records_from_table_for_ids_in_field(
+            "driver", "drivers", mabd
+        )
+        driver = ", ".join([record.get_field("name") for record in driver_records])
+
         date = self.get_field("date")
 
         return {

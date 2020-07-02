@@ -1,35 +1,29 @@
 import pytest
 
-from mabd.app import MABD, Delivery, Offer, Request
+from mabd.app import MABD, Delivery, Offer, Request, Record
 
 
 def test_can_get_all_requestIDs_fulfilled_by_delivery():
     mabd = MABD()
     deliveries = mabd.get_airtable("deliveries")
-    first_delivery = deliveries.match("id", 1)
-    returned_requests = mabd.delivery_get_all_requestIDs(first_delivery)
+    first_delivery = mabd.get_delivery_by_number(1)
+    returned_requests = first_delivery.get_all_requestIDs()
     assert len(returned_requests) == 3
 
 
 def test_can_get_confirmed_offer_from_request():
     mabd = MABD()
-    requests = mabd.get_airtable("requests")
-    requestID = "rec4hBg7aLIxYl3RO"
-    request = requests.get(requestID)
-    assert (
-        mabd.request_get_confirmed_offerID(request)
-        == request.get_field("confirmed_offer")[0]
-    )
+    request = mabd.get_record_from_table_by_id("requests", "rec4hBg7aLIxYl3RO")
+    assert request.get_confirmed_offerID() == "reche1z3Dtfexpa8n"
+
+    request2 = mabd.get_record_from_table_by_id("requests", "rec1EqOYCFiqjfPFZ")
+    assert request.get_confirmed_offerID() == None
 
 
 def test_can_get_matching_offers_from_request():
     mabd = MABD()
-    requests = mabd.get_airtable("requests")
-    requestID = "recD0pKjK9LMIm7k7"
-    request = requests.get(requestID)
-    assert mabd.request_get_matching_offerIDs(request) == request.get_record_field(
-        "matching_offers"
-    )
+    request = mabd.get_record_from_table_by_id("requests", "recHE4q1ZkuXpUcde")
+    assert request.get_matching_offerIDs() == ["recbuFMiAi5wNCswt"]
 
 
 def test_can_update_delivery_by_id():
@@ -74,7 +68,7 @@ def test_delivery_get_all_requestIDs_can_handle_deliveries_without_requests():
     mabd = MABD()
 
     delivery2 = mabd.get_delivery_by_number(2)
-    requestIDs = mabd.delivery_get_all_requestIDs(delivery2)
+    requestIDs = delivery2.get_all_requestIDs()
 
     assert len(requestIDs) == 2
 
@@ -82,6 +76,47 @@ def test_delivery_get_all_requestIDs_can_handle_deliveries_without_requests():
         delivery2.get_id(), {"requests": []}
     )
 
-    requestIDs = mabd.delivery_get_all_requestIDs(delivery2_without_requests)
+    requestIDs = delivery2_without_requests.get_all_requestIDs()
 
     assert requestIDs == []
+
+
+def test_Record_can_imitate_record_dict():
+    mabd = MABD()
+    record = mabd.get_record_from_table_by_id("people", "rec1BI0ZJlxZ0xUnI")
+
+    assert record["id"] == "rec1BI0ZJlxZ0xUnI"
+    assert record["fields"]["name"] == "Caroline"
+    assert record["createdTime"] == "2020-05-23T17:06:03.000Z"
+
+
+def test_get_generic_record_for_records_without_subclassed_datastructures():
+    mabd = MABD()
+
+    person1 = mabd.get_record_from_table_by_id("people", "rec1BI0ZJlxZ0xUnI")
+    assert type(person1) is Record
+
+    driver1 = mabd.get_record_from_table_by_id("drivers", "rec0UsfN8i2IYAtZC")
+    assert type(driver1) is Record
+
+    status1 = mabd.get_record_from_table_by_id("statuses", "rec370ei78Jt6y7w6")
+    assert type(status1) is Record
+
+
+def test_Delivery_prints_itself_nicely(capsys):
+    mabd = MABD()
+    delivery = mabd.get_delivery_by_number(1)
+
+    print(delivery)
+    captured = capsys.readouterr()
+
+    assert "Delivery with" in captured.out
+    assert "fulfilled?: True" in captured.out
+    assert "number: 1" in captured.out
+
+
+def test_getting_non_existent_record_from_table_returns_None():
+    mabd = MABD()
+
+    no_record = mabd.get_record_from_table_by_id("requests", "blahhhh")
+    assert no_record is None
