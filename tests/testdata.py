@@ -52,7 +52,7 @@ class TestTable(object):
 
     def get(self, record_id) -> Union[TestRecord, None]:
         """consumes nothing and produces the record with id record_id, 
-or None if no suc record is found.
+or None if no such record is found.
 """
         records = self.get_all()
         for record in records:
