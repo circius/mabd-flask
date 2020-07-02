@@ -81,16 +81,15 @@ this effect on the airtable.
         )
         return [Delivery(delivery_dict) for delivery_dict in delivery_dicts]
 
-    def delivery_get_all_requestIDs(self, delivery) -> Union[List[str], None]:
+    def delivery_get_all_requestIDs(self, delivery) -> list:
         """consumes a delivery Record and produces a list of the IDs of the requests
-            fulfilled by it, or None.
+            fulfilled by it.
         """
+        delivery_fields = self.record_get_fields(delivery)
         try:
-            result = self.record_get_fields(delivery)["requests"]
-        except ValueError:
-            if verbose:
-                print(f"No requests found for delivery:\n {delivery}")
-                return None
+            result = delivery_fields["requests"]
+        except KeyError as e:
+            return []
         return result
 
     def get_airtable(self, table_name: str) -> airtable.Airtable:
