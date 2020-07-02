@@ -24,13 +24,3 @@ it has a value, or exits with a warning.
         print(f"Compulsory environment variable {name} unset: exiting.")
         exit(1)
     return value
-
-
-def no_nonesP(l: list):
-    """ consumes a list and produces True if no element of the list is None, 
-False otherwise
-"""
-
-    if len(l) is 0:
-        return True
-    return l[0] is not None and no_nonesP(l[1:])
