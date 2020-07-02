@@ -103,6 +103,19 @@ this effect on the airtable.
 """
         return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
 
+    def get_record_from_table_by_id(self, table_name: str, record_id: str) -> Record:
+        """consumes a table-name and a record_id and produces the
+corresponding Record.
+
+        """
+        constructors = {"deliveries": Delivery, "requests": Request, "offers": Offer}
+        record_dict = self.get_airtable(table_name).get(record_id)
+
+        if table_name in constructors.keys():
+            return constructors[table_name](record_dict)
+        else:
+            return Record(record_dict)
+
     def get_request_by_id(self, request_id: str) -> Request:
         """consume a request_id and produce the corresponding Request from
 the requests table.
