@@ -80,6 +80,7 @@ dict updated to the corresponding value.
         stored in the table.
 
         """
+        NOTHING = [None, False, []]
         record = self.get(record_id)
         for key in update_dict.keys():
             value = update_dict[key]
