@@ -24,7 +24,7 @@ setuptools.setup(
     setup_requires=["pytest-runner",],
     install_requires=[
         "airtable-python-wrapper",
-        "Click",
+        "flask"
     ],
     entry_points="""""",
 )
