@@ -237,7 +237,7 @@ class Request(Record):
         As a side-effect, produce this effect on the mabd-state.
         """
         updated_request = mabd.update_request(self.get_id(), {field_name: value})
-        return updated_request
+        return Request(updated_request)
 
 
 class Delivery(Record):
@@ -254,9 +254,8 @@ class Delivery(Record):
         value. as a side-effect, produce this effect on the mabd-state.
 
         """
-        return mabd.update_record_in_table(
-            "deliveries", self.get_id(), {field_name: value}
-        )
+        updated_delivery = mabd.update_delivery(self.get_id(), {field_name: value})
+        return Delivery(updated_delivery)
 
     def get_fulfilment(self) -> bool:
         return self.get_field("fulfilled?", False)
@@ -265,7 +264,7 @@ class Delivery(Record):
         return self.get_field("id", -1)
 
     def do_fulfilment(self, mabd: MABD) -> Delivery:
-        """consume an mabd-state, and produce myself with my 'fulfilment' status set to 'true'.
+        """consume an mabd-state, and produce a copy of myself with my 'fulfilment' status set to 'true'.
 as a side-effect, produce this effect on the airtable.
         also:
         1. set the status of all requests associated with the delivery to 'fulfilled'
@@ -273,12 +272,13 @@ as a side-effect, produce this effect on the airtable.
         3. remove all 'matching offers' from those requests.
 
         """
-        self._set_field(mabd, "fulfilled?", True)
         request_ids = self.get_field("requests")
         requests_fulfilled = [mabd.get_request_by_id(r_id) for r_id in request_ids]
         for request in requests_fulfilled:
             request.do_fulfilment(mabd)
-        return self
+
+        fulfilled_delivery = self._set_field(mabd, "fulfilled?", True)
+        return fulfilled_delivery
 
     def get_all_requestIDs(self) -> list:
         """ I produce a list of all the requests fulfilled by me.
