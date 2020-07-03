@@ -4,13 +4,7 @@ import os
 
 
 def create_app(test_config=None):
-    app = Flask(
-        "mabd.flask_interface",
-        # root_path="~/projects/mabd_python_proper/src/mabd/flask_interface/",
-        # template_folder="~/projects/mabd_python_proper/src/mabd/flask_interface/templates",
-    )
-
-    print(f"Root path for Flask: {app.root_path}")
+    app = Flask("mabd.flask_interface",)
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
@@ -24,7 +18,7 @@ def create_app(test_config=None):
 
     from . import admin
 
-    app.register_blueprint(admin.bp)
-    app.add_url_rule("/", endpoint="")
+    app.register_blueprint(admin.bp, url_prefix="/admin")
+
 
     return app
