@@ -67,16 +67,16 @@ or None if no such record is found.
                 return record
         return None
 
-    def match(self, field_name, value) -> Union[TestRecord, None]:
+    def match(self, field_name, value) -> Union[TestRecord, dict]:
         """consumes nothing and produces thetox first record with field_name
-equal to value, or None.
+equal to value, or an empty Dict.
 
         """
         records = self.get_all()
         for record in records:
             if record.get_record_field(field_name) is value:
                 return record
-        return None
+        return {}
 
     def update(self, record_id, update_dict, **kwargs):
         """consumes a record_id and an update_dict and returns the
