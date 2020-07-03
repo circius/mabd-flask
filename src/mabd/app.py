@@ -140,15 +140,19 @@ offers table.
 """
         return delivery.pprint(self)
 
-    def do_delivery_fulfilment(self, delivery_number: int) -> bool:
+    def do_delivery_fulfilment(self, delivery_number: int) -> Union[Delivery, bool]:
         """does fulfilment of a delivery specified by its
         number, adjusting all requests and offers associated with that
-        delivery.
+        delivery. Returns the delivery if the the fulfilment is successful,
+        False otherwise.
         
         """
         delivery_dict = self.get_airtable("deliveries").match("id", delivery_number)
+        if delivery_dict == {}:
+            return False
         delivery = Delivery(delivery_dict)
-        return delivery.do_fulfilment(self)
+        after_fulfilment = delivery.do_fulfilment(self)
+        return after_fulfilment
 
 
 class Record(object):
