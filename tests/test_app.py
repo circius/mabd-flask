@@ -11,6 +11,12 @@ def test_can_get_all_requestIDs_fulfilled_by_delivery():
     assert len(returned_requests) == 3
 
 
+def test_MABD_do_delivery_fulfilment_returns_false_if_delivery_does_not_exist():
+    mabd = MABD()
+    result = mabd.do_delivery_fulfilment(3002)
+    assert result == False
+
+
 def test_can_get_confirmed_offer_from_request():
     mabd = MABD()
     request = mabd.get_record_from_table_by_id("requests", "rec4hBg7aLIxYl3RO")
