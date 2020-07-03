@@ -48,7 +48,14 @@ class TestTable(object):
         """consumes nothing and produces a list of all TestRecords.
 
         """
-        return [TestRecord(record_dict) for record_dict in self.table_dict]
+        records = [TestRecord(record_dict) for record_dict in self.table_dict]
+        if view == "unfulfilled deliveries":
+            return [
+                record
+                for record in records
+                if record.get_record_field("fulfilled?") == []
+            ]
+        return records
 
     def get(self, record_id) -> Union[TestRecord, None]:
         """consumes nothing and produces the record with id record_id, 
@@ -106,10 +113,14 @@ class TestRecord(object):
         return self.record_dict["fields"]
 
     def get_record_field(self, field_name) -> Any:
-        """consumes nothing and gets the value of the field with field_name
+        """consumes nothing and gets the value of the field with field_name, []
 
         """
-        return self.record_dict["fields"][field_name]
+        try:
+            result = self.record_dict["fields"][field_name]
+        except KeyError:
+            return []
+        return result
 
     def get_fields(self) -> dict:
         return self.record_dict["fields"]
