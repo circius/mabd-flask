@@ -12,6 +12,19 @@ def mock_get_all_tables(monkeypatch):
         return TD()
 
     monkeypatch.setattr(airtable_interface, "get_all_tables", mock_get_all_tables)
+    return True
+
+
+@pytest.fixture()
+def mock_get_airtable(monkeypatch):
+    from testdata import TestData as TD
+    from mabd import app
+
+    def mock_get_airtable(self, table_name):
+        return TD().get_table(table_name)
+
+    monkeypatch.setattr(app.MABD, "get_airtable", mock_get_airtable)
+    return True
 
 
 @pytest.fixture
