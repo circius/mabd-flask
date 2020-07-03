@@ -6,12 +6,12 @@ bp = Blueprint("admin", __name__)
 
 
 @bp.route("/")
-def mabd_index():
+def index():
     links_to_provide = [
-        # {
-        #     "link_text": "delivery fulfilment",
-        #     "relative_link": url_for("fulfil_deliveries"),
-        # }
+        {
+            "link_text": "delivery fulfilment",
+            "relative_link": url_for("admin.fulfil_deliveries"),
+        }
     ]
     return render_template("index.html", links=links_to_provide)
 
