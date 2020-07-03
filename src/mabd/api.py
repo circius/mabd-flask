@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from mabd.app import MABD, Delivery
 
@@ -29,9 +29,9 @@ deliveries, represented as strings.
     return [interface.get_pprinted_delivery(delivery) for delivery in deliveries]
 
 
-def do_delivery_fulfilment(delivery_id: str) -> Delivery:
+def do_delivery_fulfilment(delivery_id: str) -> Union[Delivery, bool]:
     """consumes the value of the delivery_id column of a delivery and
-produces True if if this succeedsm false otherwise. As a side-effect, processes
+produces the Delivery if this succeeds, and False otherwise. As a side-effect, processes
 all of the requests and offers associated with the delivery.
 
     """
