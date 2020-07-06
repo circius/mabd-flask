@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My Requests</title>
+  </head>
+  <body>
+    
+    <h1>{{ user }}'s requests'</h1>
+    <ul>
+      {% for link in links %}
+        <li> <a href = {{ link ['relative_link'] }}> {{ linl['link_text'] }}</a> </li>
+      {% endfor %}
+    </ul>
+
+  </body>  
+</html>

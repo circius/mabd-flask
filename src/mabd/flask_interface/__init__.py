@@ -20,5 +20,8 @@ def create_app(test_config=None):
 
     app.register_blueprint(admin.bp, url_prefix="/admin")
 
+    from . import user
+
+    app.register_blueprint(user.bp, url_prefix="/")
 
     return app
