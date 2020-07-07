@@ -53,8 +53,19 @@ def my_requests():
 
     requests = api.get_readable_unfulfilled_requests_of_person(current_user)
 
+    requests_with_matching_offers = [
+        request for request in requests if request["matching_offers_count"] > 0
+    ]
+
+    requests_no_matching_offers = [
+        request for request in requests if request["matching_offers_count"] == 0
+    ]
+
     return render_template(
-        "user_requests.html", current_user=current_user, requests=requests
+        "user_requests.html",
+        current_user=current_user,
+        requests_with_offers=requests_with_matching_offers,
+        requests_no_offers=requests_no_matching_offers,
     )
 
 
