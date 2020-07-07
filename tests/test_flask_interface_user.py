@@ -38,7 +38,8 @@ def test_can_access_unfulfilled_requests_page_with_cookie(client):
     client.set_cookie("localhost", "user", requester)
     rv = client.get("/myrequests")
 
-    assert b"Lubna's requests" in rv.data
+    print(rv.data)
+    assert b"Lubna&#39;s requests" in rv.data
 
     assert b"Sofa" in rv.data
     assert b"Wardrobe" in rv.data
@@ -50,7 +51,7 @@ def test_can_access_unfulfilled_requests_page_with_cookie(client):
     client.set_cookie("localhost", "user", requester)
     rv = client.get("/myrequests")
 
-    assert b"Nahed's requests" in rv.data
+    assert b"Nahed&#39;s requests" in rv.data
 
     assert b"Washing machine" in rv.data
     assert b"3-seater Sofa" in rv.data
