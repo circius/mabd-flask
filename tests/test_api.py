@@ -85,3 +85,11 @@ def test_can_get_readable_matching_offers_for_requestID():
         matching_offer_dict["item_name"] for matching_offer_dict in matching_offer_dicts
     ]
     assert "Four-seater Ikea sofa + footstool" in offer_names
+
+
+def test_can_get_readable_offer_by_offer_uid():
+    offer_uid = 1
+    offer = api.get_readable_offer_by_offer_uid(offer_uid)
+
+    assert offer["donor"] == "katie"
+    assert "kitchen bits" in offer["item_name"]

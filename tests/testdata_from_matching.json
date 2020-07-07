@@ -1043,6 +1043,7 @@
         {
             "id": "rec0LBWxWQAXsMNjq",
             "fields": {
+                "uid": 0,
                 "name": "Childrens books",
                 "donor": [
                     "rec2mTQeS5CI9d9jY"
@@ -1062,6 +1063,7 @@
         {
             "id": "rec0tBfTK8QN30hHK",
             "fields": {
+                "uid": 1,
                 "name": "kitchen bits",
                 "donor": [
                     "recFzYPZzQQcnYGut"
@@ -1075,6 +1077,7 @@
         {
             "id": "rec1GVMKo25KlgFPB",
             "fields": {
+                "uid": 2,
                 "name": "women's clothes",
                 "donor": [
                     "recncAd4gFzDoJ3WL"
@@ -1088,6 +1091,7 @@
         {
             "id": "rec1SNcpXmiq2kJrx",
             "fields": {
+                "uid": 3,
                 "name": "used double mattress",
                 "donor": [
                     "reczLRT4dCjdMCEaY"
@@ -1101,6 +1105,7 @@
         {
             "id": "rec29Wlwndbc2XMUj",
             "fields": {
+                "uid": 4,
                 "name": "small chest of drawers",
                 "donor": [
                     "recCBAMyb29Jtf0uo"
@@ -1114,6 +1119,7 @@
         {
             "id": "rec3N7TBwNRXA7wuE",
             "fields": {
+                "uid": 5,
                 "name": "round kitchen table with 4 chairs",
                 "donor": [
                     "rec8r2xaSvKAesbHM"
@@ -1127,6 +1133,7 @@
         {
             "id": "rec3ksi2d5hXPwZr3",
             "fields": {
+                "uid": 6,
                 "name": "Kitchen bits",
                 "donor": [
                     "recyNgAps5YMJ7Q55"
@@ -1140,6 +1147,7 @@
         {
             "id": "rec41OHSEXl8EJgcz",
             "fields": {
+                "uid": 7,
                 "name": "Large settee",
                 "donor": [
                     "recl3TFqyqB3Lupy6"
@@ -1153,6 +1161,7 @@
         {
             "id": "rec47i06TCamV96zV",
             "fields": {
+                "uid": 8,
                 "name": "Large chest of drawers",
                 "donor": [
                     "rec8r2xaSvKAesbHM"
@@ -1166,6 +1175,7 @@
         {
             "id": "rec523AXD2BMss7KZ",
             "fields": {
+                "uid": 9,
                 "name": "Table and chairs",
                 "donor": [
                     "reclmspWBtjczHTjc"
@@ -1179,6 +1189,7 @@
         {
             "id": "rec7C1qAuQ0lsKEEJ",
             "fields": {
+                "uid": 10,
                 "name": "TV stand",
                 "donor": [
                     "recQ0OX41IIsQvGs4"
@@ -1192,6 +1203,7 @@
         {
             "id": "rec9svmn74p5j1mlw",
             "fields": {
+                "uid": 11,
                 "name": "Baby crib",
                 "donor": [
                     "rec2bqd5wjtCSq1WE"
@@ -1205,6 +1217,7 @@
         {
             "id": "recB5xm0m4yyLFMx0",
             "fields": {
+                "uid": 12,
                 "name": "Bean bag",
                 "donor": [
                     "recB7SjV2WFbCtSPO"
@@ -1218,6 +1231,7 @@
         {
             "id": "recCFGzVE2ahlenjq",
             "fields": {
+                "uid": 13,
                 "name": "Microwave",
                 "donor": [
                     "recjrj62r4lj0ILkp"
@@ -1231,6 +1245,7 @@
         {
             "id": "recCcVTstJ5mobHck",
             "fields": {
+                "uid": 14,
                 "name": "double bed frame 2",
                 "donor": [
                     "recj0YwRUZSYBriiz"
@@ -1244,6 +1259,7 @@
         {
             "id": "recE7mmz8Kgp000ZP",
             "fields": {
+                "uid": 15,
                 "name": "sofa",
                 "donor": [
                     "rec9FTw948xKws3xO"
@@ -1257,6 +1273,7 @@
         {
             "id": "recEJUnOWq9xpADIw",
             "fields": {
+                "uid": 16,
                 "name": "Single divan bed",
                 "donor": [
                     "recfEOWck4UoUpswT"
@@ -1270,6 +1287,7 @@
         {
             "id": "recEd7PgOjwCbnCEi",
             "fields": {
+                "uid": 17,
                 "name": "Chest of drawers",
                 "donor": [
                     "rec1BI0ZJlxZ0xUnI"
@@ -1283,6 +1301,7 @@
         {
             "id": "recEwRhLHhsKIdKc4",
             "fields": {
+                "uid": 18,
                 "name": "Wardrobe",
                 "donor": [
                     "recQ0OX41IIsQvGs4"
@@ -1296,6 +1315,7 @@
         {
             "id": "recEzrDxsXPp57imI",
             "fields": {
+                "uid": 19,
                 "name": "sofa-bed (small)",
                 "donor": [
                     "recqLv2c65Mms8EYm"
@@ -1312,6 +1332,7 @@
         {
             "id": "recGdWEOkDaMGjbvg",
             "fields": {
+                "uid": 20,
                 "name": "Bedding",
                 "donor": [
                     "recyibqMxHCciOUDY"
@@ -1325,6 +1346,7 @@
         {
             "id": "recGmngv4CL2zitYs",
             "fields": {
+                "uid": 21,
                 "name": "Duvet ",
                 "donor": [
                     "recB7SjV2WFbCtSPO"
@@ -1338,6 +1360,7 @@
         {
             "id": "recJo91uFBIrISwRq",
             "fields": {
+                "uid": 22,
                 "name": "White round table + chairs",
                 "donor": [
                     "recFzYPZzQQcnYGut"
@@ -1351,6 +1374,7 @@
         {
             "id": "recL8Jlnyy4w5pUpa",
             "fields": {
+                "uid": 23,
                 "name": "Bookcase",
                 "donor": [
                     "rec2mTQeS5CI9d9jY"
@@ -1370,6 +1394,7 @@
         {
             "id": "recNwNbqmD0RNxf6A",
             "fields": {
+                "uid": 24,
                 "name": "Microwave",
                 "donor": [
                     "recxmxAfcDXB9zKun"
@@ -1383,6 +1408,7 @@
         {
             "id": "recQoO1ony62kc1e8",
             "fields": {
+                "uid": 25,
                 "name": "Dining table",
                 "donor": [
                     "recDRJLZ3N91EUrW1"
@@ -1399,6 +1425,7 @@
         {
             "id": "recQrkolN9sOftaRy",
             "fields": {
+                "uid": 26,
                 "name": "four \"kitchen\" chairs",
                 "donor": [
                     "recd6dVq63VHJj5Kl"
@@ -1412,6 +1439,7 @@
         {
             "id": "recRpgljQz6KIr59E",
             "fields": {
+                "uid": 27,
                 "name": "Four-seater Ikea sofa + footstool",
                 "donor": [
                     "recKcm7WrH1Vi5IvL"
@@ -1428,6 +1456,7 @@
         {
             "id": "recS0JlpDiln6BIha",
             "fields": {
+                "uid": 28,
                 "name": "Sofa",
                 "donor": [
                     "reclmspWBtjczHTjc"
@@ -1441,6 +1470,7 @@
         {
             "id": "recT7ezg9oBZ3eQiu",
             "fields": {
+                "uid": 29,
                 "name": "Wardrobe",
                 "donor": [
                     "recq1XTcqfJd1X9D1"
@@ -1457,6 +1487,7 @@
         {
             "id": "recTE5B6kNAUX9lLr",
             "fields": {
+                "uid": 30,
                 "name": "kitchen chairs",
                 "donor": [
                     "recd53b5s53UOH6G1"
@@ -1470,6 +1501,7 @@
         {
             "id": "recTuHJTH5v2Ib0LI",
             "fields": {
+                "uid": 31,
                 "name": "cloth wardrobe 1",
                 "donor": [
                     "recwbWUdGV3YgigOT"
@@ -1483,6 +1515,7 @@
         {
             "id": "recULdSpifvuG6bJg",
             "fields": {
+                "uid": 32,
                 "name": "television / tv",
                 "donor": [
                     "receBSYAehzJXguYe"
@@ -1499,6 +1532,7 @@
         {
             "id": "recXYpRyxDghBm82R",
             "fields": {
+                "uid": 33,
                 "name": "coffee table",
                 "donor": [
                     "receBSYAehzJXguYe"
@@ -1515,6 +1549,7 @@
         {
             "id": "recZ8k3glnDlWYTfR",
             "fields": {
+                "uid": 34,
                 "name": "single bed",
                 "donor": [
                     "recemk76ePZj59b1y"
@@ -1528,6 +1563,7 @@
         {
             "id": "recZXISb144DAilzb",
             "fields": {
+                "uid": 35,
                 "name": "Coffee table",
                 "donor": [
                     "rec3TAopUnxNdqop6"
@@ -1541,6 +1577,7 @@
         {
             "id": "recZjYbcaZfLU9KQ9",
             "fields": {
+                "uid": 36,
                 "name": "Chest of drawers",
                 "donor": [
                     "recPvk87Ll52j3QiE"
@@ -1554,6 +1591,7 @@
         {
             "id": "reca7wZx1XzUV4WCl",
             "fields": {
+                "uid": 37,
                 "name": "Double bed",
                 "donor": [
                     "recepYJSonhlWf2Uz"
@@ -1567,6 +1605,7 @@
         {
             "id": "recag11ZuBp7UC7Wx",
             "fields": {
+                "uid": 38,
                 "name": "Sliding door wooden dresser (q slim but useful size)",
                 "donor": [
                     "recq1XTcqfJd1X9D1"
@@ -1583,6 +1622,7 @@
         {
             "id": "recaz1E4B1IUZUZKq",
             "fields": {
+                "uid": 39,
                 "name": "Chest of drawers 2",
                 "donor": [
                     "recRH1xn1oTIcbbNW"
@@ -1596,6 +1636,7 @@
         {
             "id": "recbKEub6dHWCdmOY",
             "fields": {
+                "uid": 40,
                 "name": "Queen size mattress",
                 "donor": [
                     "recRvGjkIOAs6Acji"
@@ -1609,6 +1650,7 @@
         {
             "id": "recbuFMiAi5wNCswt",
             "fields": {
+                "uid": 41,
                 "name": "Small sofa ",
                 "donor": [
                     "recA7cEEvPxA1s1J6"
@@ -1625,6 +1667,7 @@
         {
             "id": "reccEdO0mUkUEO7Qp",
             "fields": {
+                "uid": 42,
                 "name": "High back wooden chair",
                 "donor": [
                     "recq1XTcqfJd1X9D1"
@@ -1641,6 +1684,7 @@
         {
             "id": "recdwFLY1YedFFQ07",
             "fields": {
+                "uid": 43,
                 "name": "Child’s cabin bed",
                 "donor": [
                     "recq1XTcqfJd1X9D1"
@@ -1657,6 +1701,7 @@
         {
             "id": "recein8W6Vh1kKbyF",
             "fields": {
+                "uid": 44,
                 "name": "single beds",
                 "donor": [
                     "recKcm7WrH1Vi5IvL"
@@ -1670,6 +1715,7 @@
         {
             "id": "recg5BTKn08Pwrr3k",
             "fields": {
+                "uid": 45,
                 "name": "small sofa",
                 "donor": [
                     "recQ0OX41IIsQvGs4"
@@ -1683,6 +1729,7 @@
         {
             "id": "recgbZtG0qG7Vjh7k",
             "fields": {
+                "uid": 46,
                 "name": "Microwave",
                 "donor": [
                     "reclmspWBtjczHTjc"
@@ -1696,6 +1743,7 @@
         {
             "id": "recgrlBT2W20vyW0a",
             "fields": {
+                "uid": 47,
                 "name": "toys",
                 "donor": [
                     "recBQfy2Wr1htyImb"
@@ -1709,6 +1757,7 @@
         {
             "id": "reche1z3Dtfexpa8n",
             "fields": {
+                "uid": 48,
                 "name": "Bookcase",
                 "donor": [
                     "rec6uSl8AXNflANsr"
@@ -1726,6 +1775,7 @@
         {
             "id": "reciu3XMZzSsXU5M2",
             "fields": {
+                "uid": 49,
                 "name": "mattress",
                 "donor": [
                     "recepYJSonhlWf2Uz"
@@ -1739,6 +1789,7 @@
         {
             "id": "reckEmBpIBM8JzUml",
             "fields": {
+                "uid": 50,
                 "name": "bike",
                 "donor": [
                     "recPxHkyU4U12d1Rt"
@@ -1752,6 +1803,7 @@
         {
             "id": "reckWUHoPNbT6Fqw5",
             "fields": {
+                "uid": 51,
                 "name": "futon sofa bed",
                 "donor": [
                     "recemk76ePZj59b1y"
@@ -1765,6 +1817,7 @@
         {
             "id": "reckalcyjBH8ImVQe",
             "fields": {
+                "uid": 52,
                 "name": "cloth wardrobe 2",
                 "donor": [
                     "recwbWUdGV3YgigOT"
@@ -1778,6 +1831,7 @@
         {
             "id": "recl4I0TqEe8Drq20",
             "fields": {
+                "uid": 53,
                 "name": "double bed base",
                 "donor": [
                     "recPxHkyU4U12d1Rt"
@@ -1791,6 +1845,7 @@
         {
             "id": "reclZwlC7ph82FXxq",
             "fields": {
+                "uid": 54,
                 "name": "Single Duvets, pillows and bedding",
                 "donor": [
                     "rec6OU93AZydLoERn"
@@ -1804,6 +1859,7 @@
         {
             "id": "recmMaNozlKNQnkk3",
             "fields": {
+                "uid": 55,
                 "name": "2-seater sofa bed",
                 "donor": [
                     "recUSt4HSqsQQwpC8"
@@ -1817,6 +1873,7 @@
         {
             "id": "recnkPA9mIQJc7pQu",
             "fields": {
+                "uid": 56,
                 "name": "Kitchen Stuff",
                 "donor": [
                     "recyibqMxHCciOUDY"
@@ -1830,6 +1887,7 @@
         {
             "id": "recnvcNlnT3Rm58c5",
             "fields": {
+                "uid": 57,
                 "name": "Lounge Chair",
                 "donor": [
                     "reciosWD0yUN68t2e"
@@ -1843,6 +1901,7 @@
         {
             "id": "reco5RgKa5Fn8XcCi",
             "fields": {
+                "uid": 58,
                 "name": "single bed and mattress",
                 "donor": [
                     "recBQfy2Wr1htyImb"
@@ -1856,6 +1915,7 @@
         {
             "id": "recoJIwTzYmU6lpGV",
             "fields": {
+                "uid": 59,
                 "name": "Chest of drawers 1",
                 "donor": [
                     "recRH1xn1oTIcbbNW"
@@ -1869,6 +1929,7 @@
         {
             "id": "recpIga2AzcSakVro",
             "fields": {
+                "uid": 60,
                 "name": "King size matress",
                 "donor": [
                     "recLK2TgXy0MLSfM9"
@@ -1882,6 +1943,7 @@
         {
             "id": "recpiwxIW5Zy0z5WA",
             "fields": {
+                "uid": 61,
                 "name": "shoes",
                 "donor": [
                     "recncAd4gFzDoJ3WL"
@@ -1895,6 +1957,7 @@
         {
             "id": "recpzY0VBYbkLZ5Yw",
             "fields": {
+                "uid": 62,
                 "name": "Large antique wardrobe",
                 "donor": [
                     "rec3bmzfCLKkssiyC"
@@ -1908,6 +1971,7 @@
         {
             "id": "recq7xznCzFjjZIkw",
             "fields": {
+                "uid": 63,
                 "name": "dressing table",
                 "donor": [
                     "recepYJSonhlWf2Uz"
@@ -1921,6 +1985,7 @@
         {
             "id": "recsNt3PtJiFU3ePX",
             "fields": {
+                "uid": 64,
                 "name": "Rug",
                 "donor": [
                     "rec2bqd5wjtCSq1WE"
@@ -1934,6 +1999,7 @@
         {
             "id": "recsSiOnMlFcyDN98",
             "fields": {
+                "uid": 65,
                 "name": "Small table/desk",
                 "donor": [
                     "rece4cHu1DGCiEa2V"
@@ -1947,6 +2013,7 @@
         {
             "id": "recsqAtfzey2tCXLl",
             "fields": {
+                "uid": 66,
                 "name": "Dining table",
                 "donor": [
                     "rechCWYQob5vIAk2R"
@@ -1960,6 +2027,7 @@
         {
             "id": "recss6YoMbUZ1A0ux",
             "fields": {
+                "uid": 67,
                 "name": "microwave",
                 "donor": [
                     "rec7X8yNqSAqCuNlg"
@@ -1973,6 +2041,7 @@
         {
             "id": "recuFMrqf0Ka9BCmg",
             "fields": {
+                "uid": 68,
                 "name": "table",
                 "donor": [
                     "rec9FTw948xKws3xO"
@@ -1986,6 +2055,7 @@
         {
             "id": "recuZyGz04JcAL5iS",
             "fields": {
+                "uid": 69,
                 "name": "double bed frame",
                 "donor": [
                     "recaMazxrBmLkj47N"
@@ -1999,6 +2069,7 @@
         {
             "id": "recvRKSFn8zkKgMjM",
             "fields": {
+                "uid": 70,
                 "name": "single bed and bedding",
                 "donor": [
                     "recUhLrTKuR9dAP9l"
@@ -2012,6 +2083,7 @@
         {
             "id": "recwc2ZW7oNACaFbf",
             "fields": {
+                "uid": 71,
                 "name": "microwave",
                 "donor": [
                     "recU9GV7yYZfsAuLs"
@@ -2025,6 +2097,7 @@
         {
             "id": "recx1wL5Mvu0Pvyow",
             "fields": {
+                "uid": 72,
                 "name": "Toys",
                 "donor": [
                     "recxmxAfcDXB9zKun"
@@ -2037,12 +2110,14 @@
         },
         {
             "id": "recxEWrJxEI7eOdeC",
-            "fields": {},
+            "fields": {
+                "uid": 73},
             "createdTime": "2020-05-28T09:47:51.000Z"
         },
         {
             "id": "recxOJETgC09RJEzG",
             "fields": {
+                "uid": 74,
                 "name": "large wardrobes",
                 "donor": [
                     "recPxHkyU4U12d1Rt"
@@ -2056,6 +2131,7 @@
         {
             "id": "recyO7WyhXmWJMWLF",
             "fields": {
+                "uid": 75,
                 "name": "microwave",
                 "donor": [
                     "rec9FTw948xKws3xO"
@@ -2069,6 +2145,7 @@
         {
             "id": "recydBtyLQBhtqvin",
             "fields": {
+                "uid": 76,
                 "name": " two lazyboy chairs",
                 "donor": [
                     "recl3TFqyqB3Lupy6"
@@ -2082,6 +2159,7 @@
         {
             "id": "recyvP5qLNw0hQwIl",
             "fields": {
+                "uid": 77,
                 "name": "double bed frame 1",
                 "donor": [
                     "recj0YwRUZSYBriiz"
@@ -2098,6 +2176,7 @@
         {
             "id": "recyywfxuneF2UwDA",
             "fields": {
+                "uid": 78,
                 "name": "Coffee table",
                 "donor": [
                     "rec8r2xaSvKAesbHM"
@@ -2111,6 +2190,7 @@
         {
             "id": "recz7pIP1G4OawjPc",
             "fields": {
+                "uid": 79,
                 "name": "Table and chairs",
                 "donor": [
                     "recoWJ2QZ3XOj1yC9"
@@ -2124,6 +2204,7 @@
         {
             "id": "reczUtfeMSZJJnfah",
             "fields": {
+                "uid": 80,
                 "name": "folding chairs",
                 "donor": [
                     "recd53b5s53UOH6G1"
@@ -2137,6 +2218,7 @@
         {
             "id": "reczzV9sjDiN3zu4I",
             "fields": {
+                "uid": 81,
                 "name": "table ",
                 "donor": [
                     "recPxHkyU4U12d1Rt"

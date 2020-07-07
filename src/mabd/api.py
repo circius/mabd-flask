@@ -68,9 +68,9 @@ readable values.
     return interface.get_readable_matching_offers_for_requestID(request_id)
 
 
-def get_readable_offer_by_offer_number(offer_number: int) -> dict:
-    """ consumes an offer-number and produces the corresponding offer, 
+def get_readable_offer_by_offer_uid(offer_uid: int) -> dict:
+    """ consumes an offer-uid and produces the corresponding offer, 
 represented as a readable dict.
 """
     interface = MABD()
-    return interface.get_readable_offer_by_offer_number(offer_number)
+    return interface.get_readable_offer_by_offer_uid(offer_uid)

@@ -87,17 +87,17 @@ this effect on the airtable.
 """
         return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
 
-    def get_readable_offer_by_offer_number(self, offer_number: int) -> dict:
-        """ consumes an offer-number and produces the corresponding offer.
+    def get_readable_offer_by_offer_uid(self, offer_uid: int) -> dict:
+        """ consumes an offer-uid and produces the corresponding offer.
 """
-        offer = self.get_offer_by_offer_number(offer_number)
+        offer = self.get_offer_by_offer_uid(offer_uid)
         return offer.get_minimal_representation(self)
 
-    def get_offer_by_offer_number(self, offer_number: str) -> Offer:
-        """consumes an offer-number and produces the corresponding offer.
+    def get_offer_by_offer_uid(self, offer_uid: int) -> Offer:
+        """consumes an offer-uid and produces the corresponding offer.
 
         """
-        return Offer(self.get_airtable("offers").match("offer_number", offer_number))
+        return Offer(self.get_airtable("offers").match("uid", offer_uid))
 
     def get_record_from_table_by_id(
         self, table_name: str, record_id: str
