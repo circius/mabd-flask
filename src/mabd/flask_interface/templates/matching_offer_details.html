@@ -4,9 +4,14 @@
     <meta charset="utf-8">
     <title>details for {{offer['item_name']}}</title>
     <nav>
+      <a href="{{url_for('user.index')}}">index</a>
+      >
       <a href="{{url_for('user.my_requests')}}">my requests</a>
       >
-      <a href="{{url_for('user.matching_offers', request_id=request_id)}}">request</a>
+      <a href="{{url_for('user.matching_offers', request_id=request_id)}}">matching offers</a>
+      >
+      <u>matching offer details</u>
+      >
     </nav>
   </head>
   <body>
