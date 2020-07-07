@@ -7,10 +7,32 @@ bp = Blueprint("user", __name__)
 
 @bp.route("/")
 def index():
+    user = request.cookies.get("user")
+    if user is not None:
+        print("someone is logged in")
     user_links = [
         {"link_text": "my requests", "relative_link": url_for("user.my_requests")}
     ]
-    return render_template("user_index.html", links=user_links)
+    return render_template("user_index.html", links=user_links, user=user)
+
+
+@bp.route("/login", endpoint="login_info")
+def login():
+    return render_template("user_login.html")
+
+
+@bp.route("/login/<username>", endpoint="do_login")
+def login(username):
+    response = make_response(redirect(url_for("user.index")))
+    response.set_cookie("user", username)
+    return response
+
+
+@bp.route("logout")
+def logout():
+    response = make_response(redirect(url_for("user.index")))
+    response.delete_cookie("user")
+    return response
 
 
 @bp.route("/myrequests")
