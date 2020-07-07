@@ -6,6 +6,7 @@ from __future__ import annotations
 """
 import airtable
 from typing import Dict, List, Union
+import json
 
 from mabd import airtable_interface
 
@@ -22,6 +23,19 @@ class MABD(object):
         ]
         self.TABLES = airtable_interface.get_all_tables(self.TABLE_NAMES)
         self._verbose = verbose
+
+    def dump_json_to_file(self, fd: str) -> None:
+        """consume nothing, produce nothing, and dump a pretty copy of all the data to json at
+the location specified by fd..
+
+        """
+        data = {
+            table_name: self.TABLES[table_name].get_all()
+            for table_name in self.TABLE_NAMES
+        }
+        with open(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return None
 
     def update_delivery(self, delivery_id: str, update_dict: dict) -> Delivery:
         """consume a delivery_id and an update_dicts. produce a copy of the
@@ -366,10 +380,13 @@ myself expressed as a dict.
 
         item = self.get_field("item")
 
+        number_of_matching_offers = len(self.get_field("matching_offers"))
+
         return {
             "airtable_uid": airtable_uid,
             "item": item,
             "requested_by": requested_by,
+            "matching_offers_count": number_of_matching_offers,
         }
 
     def get_records_from_table_for_ids_in_field(
@@ -489,7 +506,10 @@ if __name__ == "__main__":
         for delivery in readable_unfulfilled:
             print(delivery)
         exit(0)
-    delivery_number = sys.argv[1]
-    print(f"fulfilling delivery with number {delivery_number}")
-    result = interface.do_delivery_fulfilment(delivery_number)
-    print(f"result: {result}")
+    if sys.argv[1] == "dump":
+        interface.dump_json_to_file(sys.argv[2])
+    else:
+        delivery_number = sys.argv[1]
+        print(f"fulfilling delivery with number {delivery_number}")
+        result = interface.do_delivery_fulfilment(delivery_number)
+        print(f"result: {result}")
