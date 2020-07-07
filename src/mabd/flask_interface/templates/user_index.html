@@ -3,16 +3,23 @@
   <head>
     <meta charset="utf-8">
     <title>Mututal Aid Brighton deliveries app - main index</title>
-    <nav><a href= {{ url_for('admin.index') }}>admin login</a></nav>
+    <nav>
+      {% if user is none %}
+        <a href={{ url_for('user.login_info') }}>user login</a>
+      {% endif %}
+      <a href={{ url_for('user.logout') }}>logout</a>
+      <a href={{ url_for('admin.index') }}>admin</a>
+    </nav>
   </head>
   <body>
-    
-    <h1>user utilities</h1>
-    <ul>
-      {% for link in links %}
-        <li> <a href = {{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
-      {% endfor %}
-    </ul>
-
+    {% if user is not none %}
+      welcome, {{ user }}.
+      <h1>user utilities</h1>
+      <ul>
+        {% for link in links %}
+          <li> <a href = {{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </body>  
 </html>

@@ -51,13 +51,14 @@ def my_requests():
     except:
         abort(403)
 
-    current_requests = ["mockrequest1", "mockrequest2"]
+    requests = api.get_readable_unfulfilled_requests_of_person(current_user)
+
+    return render_template("user_requests.html", user=current_user, requests=requests)
+
+
+@bp.route("/myrequests/<request_id>")
+def matching_offers(request_id):
+    matching_offer_dicts = api.get_readable_matching_offers_for_requestID(request_id)
     return render_template(
-        "user_requests.html", user=current_user, requests=current_requests
+        "matching_offers.html", offers=matching_offer_dicts, request_id=request_id
     )
-
-
-@bp.route("/myrequests/request_id")
-def matching_offers():
-    matching_offers = ["mockoffer1", "mockoffer2"]
-    return render_template("matching_offers.html", offers=matching_offers)

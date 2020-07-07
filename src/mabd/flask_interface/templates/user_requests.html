@@ -8,8 +8,8 @@
     
     <h1>{{ user }}'s requests'</h1>
     <ul>
-      {% for link in links %}
-        <li> <a href = {{ link ['relative_link'] }}> {{ linl['link_text'] }}</a> </li>
+      {% for request in requests %}
+        <li> {{request['item']}} </li>
       {% endfor %}
     </ul>
 

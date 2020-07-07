@@ -126,3 +126,52 @@ def test_getting_non_existent_record_from_table_returns_None():
 
     no_record = mabd.get_record_from_table_by_id("requests", "blahhhh")
     assert no_record is None
+
+
+def test_can_get_unfulfilled_requests_for_person():
+    mabd = MABD()
+    requester = "Lubna"
+    requests = mabd.get_unfulfilled_requests_of_person(requester)
+
+    request_items = [request.get_field("item") for request in requests]
+
+    assert "Sofa" in request_items
+    assert "Wardrobe" in request_items
+
+    assert "TV" not in request_items
+    assert "Coffee table" not in request_items
+
+
+def test_can_get_person_record_by_name():
+    mabd = MABD()
+    person_name = "Lubna"
+    person_record = mabd.get_person_by_person_name(person_name)
+
+    assert person_record is not False
+    assert type(person_record) is Record
+
+    assert person_record.get_id() == "rec95fxPGFAmWsi0I"
+
+
+def test_can_get_minimal_representation_from_record():
+    mabd = MABD()
+
+    record = mabd.get_record_from_table_by_id("requests", "rec1EqOYCFiqjfPFZ")
+
+    minimal_representation = mabd.request_get_minimal_representation(record)
+
+    for key in ["item", "requested_by"]:
+        assert key in minimal_representation.keys()
+
+    assert minimal_representation["item"] == "Chest of drawers"
+    assert minimal_representation["requested_by"] == "Ayoub"
+
+
+def test_can_get_readable_representation_of_matching_offers_by_requestID():
+    mabd = MABD()
+    requestID = "rect8dK5CN0kF4f5F"
+    offer_dicts = mabd.get_readable_matching_offers_for_requestID(requestID)
+
+    assert type(offer_dicts) is list
+    assert len(offer_dicts) == 1
+    assert offer_dicts[0]["name"] == "Four-seater Ikea sofa + footstool"

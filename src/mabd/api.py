@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from mabd.app import MABD, Delivery
+from mabd.app import MABD, Delivery, Request
 
 
 def get_readable_unfulfilled_deliveries() -> List[dict]:
@@ -37,3 +37,22 @@ all of the requests and offers associated with the delivery.
     """
     interface = MABD()
     return interface.do_delivery_fulfilment(delivery_id)
+
+
+def get_readable_unfulfilled_requests_of_person(person_name: str) -> List[dict]:
+    """consumes the name of a person and returns the list of all of that
+person's requests, represented as dicts with readable values.
+
+    """
+    interface = MABD()
+    return interface.get_readable_unfulfilled_requests_of_person(person_name)
+
+
+def get_readable_matching_offers_for_requestID(request_id: str) -> List[dict]:
+    """consumes the id of an open request and produces the list of all of
+the corresponding request's matching offers, represented as dicts with
+readable values.
+
+    """
+    interface = MABD()
+    return interface.get_readable_matching_offers_for_requestID(request_id)

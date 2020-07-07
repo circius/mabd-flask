@@ -23,11 +23,6 @@ class MABD(object):
         self.TABLES = airtable_interface.get_all_tables(self.TABLE_NAMES)
         self._verbose = verbose
 
-    #     self.FULFILLED = self.TABLES['statuses'].match('name', 'fulfilled')['id']
-
-    # def get_fulfilled_id(self):
-    #     return self.FULFILLED
-
     def update_delivery(self, delivery_id: str, update_dict: dict) -> Delivery:
         """consume a delivery_id and an update_dicts. produce a copy of the
 corresponding delivery with all fields corresponding to keys in the
@@ -154,6 +149,67 @@ offers table.
         after_fulfilment = delivery.do_fulfilment(self)
         return after_fulfilment
 
+    def request_get_minimal_representation(self, record: Record) -> dict:
+        """consumes a record and produces a minimal representation of the
+record as a dict with readable values.
+
+        """
+        return record.get_minimal_representation(self)
+
+    def get_unfulfilled_requests_of_person(self, person_name: str) -> List[Request]:
+        """consumes the name of a person in the airtable and produces a list
+of that person's unfulfilled requests.
+
+        """
+        all_open_requests = self.get_airtable("requests")
+        search_formula = f"{{requested_by}}='{person_name}'"
+        persons_requests = all_open_requests.get_all(
+            formula=search_formula, view="open requests"
+        )
+
+        return persons_requests
+
+    def get_readable_unfulfilled_requests_of_person(
+        self, person_name: str
+    ) -> List[dict]:
+        """consumes the name of a person in the airtable and produces a list
+of that person's unfulfilled requests, represented as dicts with human-readable values.
+
+        """
+        request_dicts = self.get_unfulfilled_requests_of_person(person_name)
+        requests = [Request(request_dict) for request_dict in request_dicts]
+        return [
+            self.request_get_minimal_representation(request) for request in requests
+        ]
+
+    def get_readable_matching_offers_for_requestID(self, request_id: str) -> List[dict]:
+        """consumes the ID of a request and produces a list of that request's matching offers,
+represented as dicts with human-readable values.
+"""
+        request = self.get_record_from_table_by_id("requests", request_id)
+        print(f"getting matching offers for {request} with request_id {request_id}")
+        matching_offer_ids = request.get_field("matching_offers")
+        print(f"matching offer ids: {matching_offer_ids}")
+        matching_offers = [
+            self.get_record_from_table_by_id("offers", offer_id)
+            for offer_id in matching_offer_ids
+        ]
+        print(f"matching offers: {matching_offers}")
+        return [offer.get_minimal_representation(self) for offer in matching_offers]
+
+    def get_person_by_person_name(self, person_name: str) -> Union[Record, bool]:
+        """consumes a person_name and returns the record from the 'people'
+table with that name, or False if it's not found.
+        """
+
+        person_table = self.get_airtable("people")
+        person_dict = person_table.match("name", person_name)
+
+        if person_dict == {}:
+            return False
+
+        return Record(person_dict)
+
 
 class Record(object):
     def __init__(self, record_dict: dict):
@@ -193,6 +249,34 @@ effect on the airtable.
         As a side-effect, produce this effect on the mabd-state.
         """
         return mabd.update_offer(self.get_id(), {field_name: [value]})
+
+    def get_minimal_representation(self, mabd: MABD) -> dict:
+        """consume an mabd-state, and produce a readable representation of
+myself expressed as a dict.
+
+        """
+
+        donor_records = self.get_records_from_table_for_ids_in_field(
+            "donor", "people", mabd
+        )
+
+        donor = ", ".join([record.get_field("name") for record in donor_records])
+
+        name = self.get_field("name")
+
+        return {
+            "name": name,
+            "donor": donor,
+        }
+
+    def get_records_from_table_for_ids_in_field(
+        self, field_name, table, mabd: MABD
+    ) -> List[Record]:
+        record_ids = self.get_field(field_name)
+        return [
+            mabd.get_record_from_table_by_id(table, record_id)
+            for record_id in record_ids
+        ]
 
 
 class Request(Record):
@@ -242,6 +326,36 @@ class Request(Record):
         """
         updated_request = mabd.update_request(self.get_id(), {field_name: value})
         return Request(updated_request)
+
+    def get_minimal_representation(self, mabd: MABD) -> dict:
+        """consume an mabd-state, and produce a readable representation of
+myself expressed as a dict.
+
+        """
+
+        requested_by_records = self.get_records_from_table_for_ids_in_field(
+            "requested_by", "people", mabd
+        )
+
+        requested_by = ",".join(
+            [record.get_field("name") for record in requested_by_records]
+        )
+
+        item = self.get_field("item")
+
+        return {
+            "item": item,
+            "requested_by": requested_by,
+        }
+
+    def get_records_from_table_for_ids_in_field(
+        self, field_name, table, mabd: MABD
+    ) -> List[Record]:
+        record_ids = self.get_field(field_name)
+        return [
+            mabd.get_record_from_table_by_id(table, record_id)
+            for record_id in record_ids
+        ]
 
 
 class Delivery(Record):

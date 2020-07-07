@@ -2,16 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Offers matching request ##NUMBER##</title>
+    <title>Offers matching request {{ request_id }}</title>
   </head>
   <body>
-    
     <h1>matching offers</h1>
     <ul>
-      {% for offer in matching_offers %}
-        <li> offer </li>
+      {% for offer in offers %}
+        <li>{{offer['name']}} </li>
       {% endfor %}
     </ul>
-
   </body>  
 </html>

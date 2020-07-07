@@ -46,3 +46,42 @@ def test_can_do_delivery_fulfilment(monkeypatch, mock_get_airtable):
     fulfilment_columns = fulfilment.get_columns()
     assert "fulfilled?" in fulfilment_columns
     assert fulfilment.get_field("fulfilled?") is True
+
+
+def test_can_get_readable_unfulfilled_requests_for_extant_person(mock_get_airtable):
+    requester = "Lubna"
+    request_reps = api.get_readable_unfulfilled_requests_of_person(requester)
+
+    assert type(request_reps) == list
+    assert len(request_reps) == 2
+    assert type(request_reps[0]) == dict
+
+    items = [request_rep["item"] for request_rep in request_reps]
+    assert "Sofa" in items
+    assert "Wardrobe" in items
+
+    assert "TV" not in items
+    assert "Coffee table" not in items
+
+    requester = "Nahed"
+    request_reps = api.get_readable_unfulfilled_requests_of_person(requester)
+
+    items = [request_rep["item"] for request_rep in request_reps]
+    assert "Washing machine" in items
+    assert "3-seater Sofa" in items
+
+    requester = "no-one"
+    request_reps = api.get_readable_unfulfilled_requests_of_person(requester)
+
+    assert type(request_reps) == list
+    assert len(request_reps) == 0
+
+
+def test_can_get_readable_matching_offers_for_requestID():
+    requestID = "rect8dK5CN0kF4f5F"
+    matching_offer_dicts = api.get_readable_matching_offers_for_requestID(requestID)
+
+    offer_names = [
+        matching_offer_dict["name"] for matching_offer_dict in matching_offer_dicts
+    ]
+    assert "Four-seater Ikea sofa + footstool" in offer_names
