@@ -2,13 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Offers matching request {{ request_id }}</title>
+    <title>{{ requested_item_name }} request: matching offers</title>
+    <nav>
+      <a href="{{url_for('user.my_requests')}}">my requests</a>
+    </nav>
   </head>
   <body>
-    <h1>matching offers</h1>
+    <h1>matching offers for {{ requested_item_name }}</h1>
     <ul>
       {% for offer in offers %}
-        <li>{{offer['name']}} </li>
+        <li><a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=offer['offer_number'])}}">{{offer['item_name']}}</a></li>
       {% endfor %}
     </ul>
   </body>  

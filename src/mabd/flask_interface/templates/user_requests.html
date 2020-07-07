@@ -6,10 +6,10 @@
   </head>
   <body>
     
-    <h1>{{ user }}'s requests'</h1>
+    <h1>{{ current_user }}'s requests</h1>
     <ul>
       {% for request in requests %}
-        <li> {{request['item']}} </li>
+      <li> <a href="{{ url_for('user.matching_offers', request_id=request['airtable_uid']) }}">{{request['item']}}</a> </li>
       {% endfor %}
     </ul>
 

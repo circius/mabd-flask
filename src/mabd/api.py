@@ -25,7 +25,6 @@ deliveries, represented as strings.
     """
     interface = MABD()
     deliveries = interface.get_unfulfilled_delivery_records()
-    print([delivery for delivery in deliveries])
     return [interface.get_pprinted_delivery(delivery) for delivery in deliveries]
 
 
@@ -67,3 +66,11 @@ readable values.
     """
     interface = MABD()
     return interface.get_readable_matching_offers_for_requestID(request_id)
+
+
+def get_readable_offer_by_offer_number(offer_number: int) -> dict:
+    """ consumes an offer-number and produces the corresponding offer, 
+represented as a readable dict.
+"""
+    interface = MABD()
+    return interface.get_readable_offer_by_offer_number(offer_number)

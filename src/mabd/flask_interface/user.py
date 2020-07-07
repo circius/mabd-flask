@@ -31,7 +31,7 @@ def login():
 
 
 @bp.route("/login/<username>", endpoint="do_login")
-def login(username):
+def do_login(username):
     response = make_response(redirect(url_for("user.index")))
     response.set_cookie("user", username)
     return response
@@ -53,12 +53,36 @@ def my_requests():
 
     requests = api.get_readable_unfulfilled_requests_of_person(current_user)
 
-    return render_template("user_requests.html", user=current_user, requests=requests)
+    return render_template(
+        "user_requests.html", current_user=current_user, requests=requests
+    )
 
 
 @bp.route("/myrequests/<request_id>")
 def matching_offers(request_id):
+    requested_item_name = api.get_name_of_requested_item_from_requestID(request_id)
     matching_offer_dicts = api.get_readable_matching_offers_for_requestID(request_id)
     return render_template(
-        "matching_offers.html", offers=matching_offer_dicts, request_id=request_id
+        "matching_offers.html",
+        offers=matching_offer_dicts,
+        request_id=request_id,
+        requested_item_name=requested_item_name
+    )
+
+
+@bp.route("/myrequests/<request_id>/<offer_number>")
+def matching_offer_details(request_id, offer_number):
+    matching_offer = api.get_readable_offer_by_offer_number(offer_number)
+
+    print(matching_offer.keys())
+
+    print(matching_offer['item_name'])
+    print(matching_offer['offer_number'])
+    print(matching_offer['dimensions'])
+    
+
+    return render_template(
+        "matching_offer_details.html",
+        offer=matching_offer,
+        request_id=request_id
     )

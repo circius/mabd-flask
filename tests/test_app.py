@@ -174,4 +174,4 @@ def test_can_get_readable_representation_of_matching_offers_by_requestID():
 
     assert type(offer_dicts) is list
     assert len(offer_dicts) == 1
-    assert offer_dicts[0]["name"] == "Four-seater Ikea sofa + footstool"
+    assert offer_dicts[0]["item_name"] == "Four-seater Ikea sofa + footstool"

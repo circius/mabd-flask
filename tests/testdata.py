@@ -54,13 +54,11 @@ that can handle multiple filters, formulas and so on.
 
         """
         if formula is not None:
-            print(formula)
             if "=" in formula:
                 # hack to make things work for requests filtered by requested_by
                 # will not work if there is more than one operation in the formula
                 [lhs_with_braces, rhs_with_quotes] = formula.split("=")
                 rhs = rhs_with_quotes.strip("'")
-                print(f"proper rhs {rhs}? {rhs.isalpha()}")
                 if "requested_by" in lhs_with_braces:
                     return self._filter_over_field_requested_by(records, rhs)
                 raise ValueError(f"Did not recognise formula {formula} with lhs {lhs}")
