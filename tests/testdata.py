@@ -6,6 +6,7 @@ from typing import List
 
 
 class TestData(object):
+
     TESTDATA_PATH = "./tests/testdata_from_matching.json"
 
     def __init__(self):
@@ -43,18 +44,83 @@ class TestData(object):
 class TestTable(object):
     def __init__(self, table_dict):
         self.table_dict = table_dict
+        self.FULFILLED = "recVpVbXctm0qsL0d"
 
-    def get_all(self, view=None) -> List[TestRecord]:
-        """consumes nothing and produces a list of all TestRecords.
+    def _get_all_over_subset(self, records: List[Record], formula=None):
+        """consumes a list of records and does get_all over it. Can handle
+formula naively - i.e. only a subset of commands, ad-hoc.  TODO:
+should replace this ad-hoc implementation with a proper recursive one
+that can handle multiple filters, formulas and so on.
+
+        """
+        if formula is not None:
+            print(formula)
+            if "=" in formula:
+                # hack to make things work for requests filtered by requested_by
+                # will not work if there is more than one operation in the formula
+                [lhs_with_braces, rhs_with_quotes] = formula.split("=")
+                rhs = rhs_with_quotes.strip("'")
+                print(f"proper rhs {rhs}? {rhs.isalpha()}")
+                if "requested_by" in lhs_with_braces:
+                    return self._filter_over_field_requested_by(records, rhs)
+                raise ValueError(f"Did not recognise formula {formula} with lhs {lhs}")
+
+        return records
+
+    def _filter_over_field_requested_by(
+        self, requests: List[TestRecord], person_name: str
+    ) -> List[Record]:
+        """consumes the name of a Person and a list of requests represented by
+TestRecords and produces the subset of the list for which the value of
+requested_by is that name.
+
+        """
+        result = []
+        for request in requests:
+            requester_id = request.get_record_field("requested_by")[0]
+            person_record_of_requester = (
+                TestData().get_table("people").get(requester_id)
+            )
+            requested_name = person_record_of_requester.get_record_field("name")
+            if requested_name == person_name:
+                result.append(request)
+        return result
+
+    def _get_all_handle_view(self, view, formula=None) -> List[TestRecord]:
+        """consumes the name of a view and returns the subset of my records
+that match that view. An unrecognised view will not error, but will
+produce an empty list.
 
         """
         records = [TestRecord(record_dict) for record_dict in self.table_dict]
+
         if view == "unfulfilled deliveries":
-            return [
+            subset = [
                 record
                 for record in records
                 if record.get_record_field("fulfilled?") == []
             ]
+            return self._get_all_over_subset(subset, formula)
+
+        elif view == "open requests":
+            subset = [
+                record
+                for record in records
+                if record.get_field("status") != [self.FULFILLED]
+            ]
+            return self._get_all_over_subset(subset, formula)
+
+        return []
+
+    def get_all(self, view=None, formula=None) -> List[TestRecord]:
+        """consumes nothing and produces a list of all TestRecords.
+
+        """
+        records = [TestRecord(record_dict) for record_dict in self.table_dict]
+
+        if view is not None:
+            return self._get_all_handle_view(view, formula)
+
         return records
 
     def get(self, record_id) -> Union[TestRecord, None]:
@@ -74,7 +140,7 @@ equal to value, or an empty Dict.
         """
         records = self.get_all()
         for record in records:
-            if record.get_record_field(field_name) is value:
+            if record.get_record_field(field_name) == value:
                 return record
         return {}
 
@@ -113,11 +179,12 @@ class TestRecord(object):
         return self.record_dict["fields"]
 
     def get_record_field(self, field_name) -> Any:
-        """consumes nothing and gets the value of the field with field_name, []
+        """consumes nothing and gets the value of the field with field_name,
+or [] if the field doesn't exist
 
         """
         try:
-            result = self.record_dict["fields"][field_name]
+            result = self.get_field(field_name)
         except KeyError:
             return []
         return result
