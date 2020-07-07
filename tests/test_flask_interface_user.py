@@ -1,12 +1,12 @@
 import pytest
 
 
-def test_user_index_advertises_available_tools(client):
+def test_user_index_no_login_advertises_available_actions(client):
     rv = client.get("/")
 
-    assert b"admin login" in rv.data
+    assert b"admin" in rv.data
 
-    assert b"my requests" in rv.data
+    assert b"user login" in rv.data
 
 
 def test_getting_requests_requires_cookie(client):
