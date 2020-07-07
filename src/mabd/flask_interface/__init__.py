@@ -2,12 +2,14 @@ from flask import Flask
 
 import os
 
+from . import config
+
 
 def create_app(test_config=None):
-    app = Flask("mabd.flask_interface",)
+    app = Flask("mabd.flask_interface")
 
     if test_config is None:
-        app.config.from_pyfile("config.py", silent=True)
+        app.config.from_object(config.Config)
     else:
         app.config.from_mapping(test_config)
 
