@@ -48,6 +48,17 @@ person's requests, represented as dicts with readable values.
     return interface.get_readable_unfulfilled_requests_of_person(person_name)
 
 
+def get_name_of_requested_item_from_requestID(requestID: str) -> str:
+    """consumes a requestID and produces the name of the corresponding
+request.
+
+    """
+    interface = MABD()
+    request = interface.get_record_from_table_by_id("requests", requestID)
+    item_name = request.get_field("item")
+    return item_name
+
+
 def get_readable_matching_offers_for_requestID(request_id: str) -> List[dict]:
     """consumes the id of an open request and produces the list of all of
 the corresponding request's matching offers, represented as dicts with

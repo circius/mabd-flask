@@ -87,6 +87,18 @@ this effect on the airtable.
 """
         return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
 
+    def get_readable_offer_by_offer_number(self, offer_number: int) -> dict:
+        """ consumes an offer-number and produces the corresponding offer.
+"""
+        offer = self.get_offer_by_offer_number(offer_number)
+        return offer.get_minimal_representation(self)
+
+    def get_offer_by_offer_number(self, offer_number: str) -> Offer:
+        """consumes an offer-number and produces the corresponding offer.
+
+        """
+        return Offer(self.get_airtable("offers").match("offer_number", offer_number))
+
     def get_record_from_table_by_id(
         self, table_name: str, record_id: str
     ) -> Union[Record, None]:
@@ -149,12 +161,12 @@ offers table.
         after_fulfilment = delivery.do_fulfilment(self)
         return after_fulfilment
 
-    def request_get_minimal_representation(self, record: Record) -> dict:
+    def request_get_minimal_representation(self, request: Request) -> dict:
         """consumes a record and produces a minimal representation of the
 record as a dict with readable values.
 
         """
-        return record.get_minimal_representation(self)
+        return request.get_minimal_representation(self)
 
     def get_unfulfilled_requests_of_person(self, person_name: str) -> List[Request]:
         """consumes the name of a person in the airtable and produces a list
@@ -178,23 +190,21 @@ of that person's unfulfilled requests, represented as dicts with human-readable 
         """
         request_dicts = self.get_unfulfilled_requests_of_person(person_name)
         requests = [Request(request_dict) for request_dict in request_dicts]
-        return [
+        readable_requests = [
             self.request_get_minimal_representation(request) for request in requests
         ]
+        return readable_requests
 
     def get_readable_matching_offers_for_requestID(self, request_id: str) -> List[dict]:
         """consumes the ID of a request and produces a list of that request's matching offers,
 represented as dicts with human-readable values.
 """
         request = self.get_record_from_table_by_id("requests", request_id)
-        print(f"getting matching offers for {request} with request_id {request_id}")
         matching_offer_ids = request.get_field("matching_offers")
-        print(f"matching offer ids: {matching_offer_ids}")
         matching_offers = [
             self.get_record_from_table_by_id("offers", offer_id)
             for offer_id in matching_offer_ids
         ]
-        print(f"matching offers: {matching_offers}")
         return [offer.get_minimal_representation(self) for offer in matching_offers]
 
     def get_person_by_person_name(self, person_name: str) -> Union[Record, bool]:
@@ -256,17 +266,28 @@ myself expressed as a dict.
 
         """
 
+        offer_number = self.get_field("offer_number")
+
         donor_records = self.get_records_from_table_for_ids_in_field(
             "donor", "people", mabd
         )
 
         donor = ", ".join([record.get_field("name") for record in donor_records])
 
-        name = self.get_field("name")
+        item_name = self.get_field("name")
+
+        image_records = self.get_field("attachments")
+
+        image_urls = [image_record["url"] for image_record in image_records]
+
+        dimensions = self.get_field("dimensions")
 
         return {
-            "name": name,
+            "offer_number": offer_number,
+            "item_name": item_name,
             "donor": donor,
+            "dimensions": dimensions,
+            "image_urls": image_urls,
         }
 
     def get_records_from_table_for_ids_in_field(
@@ -333,6 +354,8 @@ myself expressed as a dict.
 
         """
 
+        airtable_uid = self.get_id()
+
         requested_by_records = self.get_records_from_table_for_ids_in_field(
             "requested_by", "people", mabd
         )
@@ -344,6 +367,7 @@ myself expressed as a dict.
         item = self.get_field("item")
 
         return {
+            "airtable_uid": airtable_uid,
             "item": item,
             "requested_by": requested_by,
         }
