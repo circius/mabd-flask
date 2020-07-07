@@ -81,19 +81,10 @@ def matching_offers(request_id):
     )
 
 
-@bp.route("/myrequests/<request_id>/<offer_number>")
-def matching_offer_details(request_id, offer_number):
-    matching_offer = api.get_readable_offer_by_offer_number(offer_number)
-
-    print(matching_offer.keys())
-
-    print(matching_offer['item_name'])
-    print(matching_offer['offer_number'])
-    print(matching_offer['dimensions'])
-    
+@bp.route("/myrequests/<request_id>/<offer_uid>")
+def matching_offer_details(request_id, offer_uid):
+    matching_offer = api.get_readable_offer_by_offer_uid(offer_uid)
 
     return render_template(
-        "matching_offer_details.html",
-        offer=matching_offer,
-        request_id=request_id
+        "matching_offer_details.html", offer=matching_offer, request_id=request_id
     )
