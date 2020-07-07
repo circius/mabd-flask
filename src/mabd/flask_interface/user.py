@@ -77,7 +77,7 @@ def matching_offers(request_id):
         "matching_offers.html",
         offers=matching_offer_dicts,
         request_id=request_id,
-        requested_item_name=requested_item_name
+        requested_item_name=requested_item_name,
     )
 
 
