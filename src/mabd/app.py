@@ -4,9 +4,10 @@ from __future__ import annotations
 """ encapsulates functions for parsing and adjusting Airtable objects
 
 """
-import airtable
 from typing import Dict, List, Union
 import json
+
+import airtable
 
 from mabd import airtable_interface
 
@@ -24,100 +25,21 @@ class MABD(object):
         self.TABLES = airtable_interface.get_all_tables(self.TABLE_NAMES)
         self._verbose = verbose
 
-    def dump_json_to_file(self, fd: str) -> None:
-        """consume nothing, produce nothing, and dump a pretty copy of all the data to json at
-the location specified by fd..
-
-        """
-        data = {
-            table_name: self.TABLES[table_name].get_all()
-            for table_name in self.TABLE_NAMES
-        }
-        with open(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        return None
-
-    def update_delivery(self, delivery_id: str, update_dict: dict) -> Delivery:
-        """consume a delivery_id and an update_dicts. produce a copy of the
-corresponding delivery with all fields corresponding to keys in the
-dict updated to the corresponding values; as a side-effect, produce
-this effect on the airtable.
-
-        """
-        delivery_dict = self.update_record_in_table(
-            "deliveries", delivery_id, update_dict
-        )
-        return Delivery(delivery_dict)
-
-    def update_request(self, request_id: str, update_dict: dict) -> Request:
-        """consume a request_id and an update_dicts. produce a copy of the
-corresponding delivery with all fields corresponding to keys in the
-dict updated to the corresponding values; as a side-effect, produce
-this effect on the airtable.
-
-        """
-        request_dict = self.update_record_in_table("requests", request_id, update_dict)
-        return Request(request_dict)
-
-    def update_record_in_table(
-        self, table_name: str, record_id: str, update_dict: dict
-    ) -> dict:
-        """I consume the name of a table, the id of a record in that table,
-and an update_dict, and produce a copy of the corresponding record
-with all fields corresponding to keys in the dict updated to the
-corresponding values; as a side-effect, I produce this effect on the
-airtable.
-
-
-        """
-        airtable = self.get_airtable(table_name)
-        return airtable.update(record_id, update_dict, typecast=True)
-
-    def update_offer(self, offer_id: str, update_dict: dict) -> Offer:
-        """consume a offer_id and an update_dicts. produce a copy of the
-corresponding delivery with all fields corresponding to keys in the
-dict updated to the corresponding values; as a side-effect, produce
-this effect on the airtable.
-
-        """
-        offer_dict = self.update_record_in_table("offers", offer_id, update_dict)
-        return Offer(offer_dict)
-
-    def get_unfulfilled_delivery_records(self) -> List[Delivery]:
-        """ consumes nothing and gets all unfulfilled deliveries from the airtable.
-            """
-        delivery_dicts = self.get_airtable("deliveries").get_all(
-            view="unfulfilled deliveries"
-        )
-        return [Delivery(delivery_dict) for delivery_dict in delivery_dicts]
+    # getters
 
     def get_airtable(self, table_name: str) -> airtable.Airtable:
         """ consume the name of a table and produce the corresponding airtable.
 """
         return self.TABLES[table_name]
 
-    def get_delivery_by_number(self, delivery_number: int) -> Delivery:
-        """ consumes a delivery number and produces the corresponding delivery.
-"""
-        return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
-
-    def get_readable_offer_by_offer_uid(self, offer_uid: int) -> dict:
-        """ consumes an offer-uid and produces the corresponding offer.
-"""
-        offer = self.get_offer_by_offer_uid(offer_uid)
-        return offer.get_minimal_representation(self)
-
-    def get_offer_by_offer_uid(self, offer_uid: int) -> Offer:
-        """consumes an offer-uid and produces the corresponding offer.
-
-        """
-        return Offer(self.get_airtable("offers").match("uid", offer_uid))
-
+    ## getters - records from tables
+    ### getter - main abstract method for getting records from tables. despatcher.
     def get_record_from_table_by_id(
         self, table_name: str, record_id: str
     ) -> Union[Record, None]:
         """consumes a table-name and a record_id and produces the
-corresponding Record, or None.
+corresponding Record - represented as the appropriate class if one is
+available, or as a Record if not - or None.
 
         """
         constructors = {"deliveries": Delivery, "requests": Request, "offers": Offer}
@@ -133,20 +55,20 @@ corresponding Record, or None.
         else:
             return Record(record_dict)
 
-    def get_request_by_id(self, request_id: str) -> Request:
-        """consume a request_id and produce the corresponding Request from
-the requests table.
+    ### getters - Deliveries
 
-        """
-        return Request(self.get_airtable("requests").get(request_id))
+    def get_delivery_by_number(self, delivery_number: int) -> Delivery:
+        """ consumes a delivery number and produces the corresponding delivery.
+"""
+        return Delivery(self.get_airtable("deliveries").match("id", delivery_number))
 
-    def get_offer_by_id(self, offer_id: str) -> Offer:
-        """" consume an offer_id and produce the corresponding Offer from the
-offers table.
-
-        """
-        offer_dict = self.get_airtable("offers").get(offer_id)
-        return Offer(offer_dict)
+    def get_unfulfilled_delivery_records(self) -> List[Delivery]:
+        """ consumes nothing and gets all unfulfilled deliveries from the airtable.
+            """
+        delivery_dicts = self.get_airtable("deliveries").get_all(
+            view="unfulfilled deliveries"
+        )
+        return [Delivery(delivery_dict) for delivery_dict in delivery_dicts]
 
     def delivery_get_minimal_representation(self, delivery: Delivery) -> dict:
         """consumes a Delivery and produces a minimal dict representation of
@@ -161,26 +83,47 @@ offers table.
 """
         return delivery.pprint(self)
 
-    def do_delivery_fulfilment(self, delivery_number: int) -> Union[Delivery, bool]:
-        """does fulfilment of a delivery specified by its
-        number, adjusting all requests and offers associated with that
-        delivery. Returns the delivery if the the fulfilment is successful,
-        False otherwise.
-        
-        """
-        delivery_dict = self.get_airtable("deliveries").match("id", delivery_number)
-        if delivery_dict == {}:
-            return False
-        delivery = Delivery(delivery_dict)
-        after_fulfilment = delivery.do_fulfilment(self)
-        return after_fulfilment
+    ## getters - Offers
+    def get_readable_offer_by_offer_uid(self, offer_uid: int) -> dict:
+        """ consumes an offer-uid and produces the corresponding offer.
+"""
+        offer = self.get_offer_by_offer_uid(offer_uid)
+        return offer.get_minimal_representation(self)
 
-    def request_get_minimal_representation(self, request: Request) -> dict:
-        """consumes a record and produces a minimal representation of the
-record as a dict with readable values.
+    def get_offer_by_offer_uid(self, offer_uid: int) -> Offer:
+        """consumes an offer-uid and produces the corresponding offer.
 
         """
-        return request.get_minimal_representation(self)
+        return Offer(self.get_airtable("offers").match("uid", offer_uid))
+
+    def get_offer_by_id(self, offer_id: str) -> Offer:
+        """" consume an offer_id and produce the corresponding Offer from the
+offers table.
+
+        """
+        offer_dict = self.get_airtable("offers").get(offer_id)
+        return Offer(offer_dict)
+
+    def get_readable_matching_offers_for_requestID(self, request_id: str) -> List[dict]:
+        """consumes the ID of a request and produces a list of that request's matching offers,
+represented as dicts with human-readable values.
+"""
+        request = self.get_record_from_table_by_id("requests", request_id)
+        matching_offer_ids = request.get_field("matching_offers")
+        matching_offers = [
+            self.get_record_from_table_by_id("offers", offer_id)
+            for offer_id in matching_offer_ids
+        ]
+        return [offer.get_minimal_representation(self) for offer in matching_offers]
+
+    ## getters - requests
+
+    def get_request_by_id(self, request_id: str) -> Request:
+        """consume a request_id and produce the corresponding Request from
+the requests table.
+
+        """
+        return Request(self.get_airtable("requests").get(request_id))
 
     def get_unfulfilled_requests_of_person(self, person_name: str) -> List[Request]:
         """consumes the name of a person in the airtable and produces a list
@@ -340,6 +283,15 @@ class Record(object):
     def get_columns(self):
         return self._fields.keys()
 
+    def get_records_from_table_for_ids_in_field(
+        self, field_name, table, mabd: MABD
+    ) -> List[Record]:
+        record_ids = self.get_field(field_name)
+        return [
+            mabd.get_record_from_table_by_id(table, record_id)
+            for record_id in record_ids
+        ]
+
 
 class Offer(Record):
     def do_fulfilment(self, mabd: MABD) -> Offer:
@@ -388,23 +340,8 @@ myself expressed as a dict.
             "image_urls": image_urls,
         }
 
-    def get_records_from_table_for_ids_in_field(
-        self, field_name, table, mabd: MABD
-    ) -> List[Record]:
-        record_ids = self.get_field(field_name)
-        return [
-            mabd.get_record_from_table_by_id(table, record_id)
-            for record_id in record_ids
-        ]
-
 
 class Request(Record):
-
-    # def record_get_fields(self, record) -> List:
-    #     """consumes an airtable Record and produces its fields.
-    #     """
-    #     return record["fields"]
-
     def get_confirmed_offerID(self) -> Union[str, None]:
         """ I produce my confirmed offer, if I have one, or raise a KeyError and return None if not.
         """
@@ -473,15 +410,6 @@ myself expressed as a dict.
             "matching_offers_count": number_of_matching_offers,
         }
 
-    def get_records_from_table_for_ids_in_field(
-        self, field_name, table, mabd: MABD
-    ) -> List[Record]:
-        record_ids = self.get_field(field_name)
-        return [
-            mabd.get_record_from_table_by_id(table, record_id)
-            for record_id in record_ids
-        ]
-
 
 class Delivery(Record):
     def __str__(self):
@@ -541,15 +469,6 @@ as a side-effect, produce this effect on the airtable.
         - driver: {driver}
         - date: {date}
         """
-
-    def get_records_from_table_for_ids_in_field(
-        self, field_name, table, mabd: MABD
-    ) -> List[Record]:
-        record_ids = self.get_field(field_name)
-        return [
-            mabd.get_record_from_table_by_id(table, record_id)
-            for record_id in record_ids
-        ]
 
     def get_minimal_representation(self, mabd: MABD):
         delivery_number = self.get_field("id")
