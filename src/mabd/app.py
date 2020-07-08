@@ -353,7 +353,7 @@ effect on the airtable.
         fulfilled_offer = self._set_field(mabd, "status", "fulfilled")
         return fulfilled_offer
 
-    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Request:
+    def _set_field(self, mabd: MABD, field_name: str, value: any) -> Offer:
         """ consume an mabd-state, a field_name and a value, and produce a copy of myself
         with the corresponding field set to that value.
 
