@@ -234,6 +234,93 @@ table with that name, or False if it's not found.
 
         return Record(person_dict)
 
+    # setters
+
+    ## main abstract setter
+
+    def update_record_in_table(
+        self, table_name: str, record_id: str, update_dict: dict
+    ) -> dict:
+        """I consume the name of a table, the id of a record in that table,
+and an update_dict, and produce a copy of the corresponding record
+with all fields corresponding to keys in the dict updated to the
+corresponding values; as a side-effect, I produce this effect on the
+airtable.
+
+
+        """
+        airtable = self.get_airtable(table_name)
+        return airtable.update(record_id, update_dict, typecast=True)
+
+    ### setters - deliveries
+
+    def update_delivery(self, delivery_id: str, update_dict: dict) -> Delivery:
+        """consume a delivery_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        delivery_dict = self.update_record_in_table(
+            "deliveries", delivery_id, update_dict
+        )
+        return Delivery(delivery_dict)
+
+    ### setters - requests
+
+    def update_request(self, request_id: str, update_dict: dict) -> Request:
+        """consume a request_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        request_dict = self.update_record_in_table("requests", request_id, update_dict)
+        return Request(request_dict)
+
+    ### setters - offers
+
+    def update_offer(self, offer_id: str, update_dict: dict) -> Offer:
+        """consume a offer_id and an update_dicts. produce a copy of the
+corresponding delivery with all fields corresponding to keys in the
+dict updated to the corresponding values; as a side-effect, produce
+this effect on the airtable.
+
+        """
+        offer_dict = self.update_record_in_table("offers", offer_id, update_dict)
+        return Offer(offer_dict)
+
+    ## methods concerning deliveries
+
+    def do_delivery_fulfilment(self, delivery_number: int) -> Union[Delivery, bool]:
+        """does fulfilment of a delivery specified by its
+        number, adjusting all requests and offers associated with that
+        delivery. Returns the delivery if the the fulfilment is successful,
+        False otherwise.
+        
+        """
+        delivery_dict = self.get_airtable("deliveries").match("id", delivery_number)
+        if delivery_dict == {}:
+            return False
+        delivery = Delivery(delivery_dict)
+        after_fulfilment = delivery.do_fulfilment(self)
+        return after_fulfilment
+
+    # utility methods
+
+    def dump_json_to_file(self, fd: str) -> None:
+        """consume nothing, produce nothing, and dump a pretty copy of all the data to json at
+the location specified by fd..
+
+        """
+        data = {
+            table_name: self.TABLES[table_name].get_all()
+            for table_name in self.TABLE_NAMES
+        }
+        with open(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return None
+
 
 class Record(object):
     def __init__(self, record_dict: dict):
