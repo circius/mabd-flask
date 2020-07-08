@@ -15,12 +15,24 @@ def test_getting_requests_requires_cookie(client):
     assert rv.status_code == 403
 
 
-def test_can_login(client):
+def test_user_can_login(client):
     rv = client.get("/login/Lubna", follow_redirects=True)
 
     assert b"welcome, Lubna" in rv.data
     assert b"logout" in rv.data
     assert b"login" not in rv.data
+
+
+def test_user_can_logout(client):
+    rv = client.get("/login/Lubna", follow_redirects=True)
+
+    assert b"welcome, Lubna" in rv.data
+    assert b"logout" in rv.data
+    assert b"login" not in rv.data
+
+    rv = client.get("/logout", follow_redirects=True)
+
+    assert b"welcome" not in rv.data
 
 
 def test_visiting_the_login_page_when_not_logged_in_shows_information_about_logging_in(
