@@ -209,17 +209,14 @@ of that person's unfulfilled requests, represented as dicts with human-readable 
         ]
         return readable_requests
 
-    def get_readable_matching_offers_for_requestID(self, request_id: str) -> List[dict]:
-        """consumes the ID of a request and produces a list of that request's matching offers,
-represented as dicts with human-readable values.
-"""
-        request = self.get_record_from_table_by_id("requests", request_id)
-        matching_offer_ids = request.get_field("matching_offers")
-        matching_offers = [
-            self.get_record_from_table_by_id("offers", offer_id)
-            for offer_id in matching_offer_ids
-        ]
-        return [offer.get_minimal_representation(self) for offer in matching_offers]
+    def request_get_minimal_representation(self, request: Request) -> dict:
+        """consumes a record and produces a minimal representation of the
+record as a dict with readable values.
+
+        """
+        return request.get_minimal_representation(self)
+
+    ## getters - people
 
     def get_person_by_person_name(self, person_name: str) -> Union[Record, bool]:
         """consumes a person_name and returns the record from the 'people'
