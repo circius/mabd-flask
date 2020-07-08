@@ -13,7 +13,7 @@ def index():
             "relative_link": url_for("admin.fulfil_deliveries"),
         }
     ]
-    return render_template("index.html", links=links_to_provide)
+    return render_template("admin_index.html", links=links_to_provide)
 
 
 @bp.route("/fulfilment")
@@ -26,7 +26,7 @@ def fulfil_deliveries():
             error = f"No unfulfilled delivery has the number {delivery_id}"
     delivery_dicts = api.get_readable_unfulfilled_deliveries()
     return render_template(
-        "fulfilment.html",
+        "admin_delivery_fulfilment.html",
         delivery_dict_list=delivery_dicts,
         delivery_num=delivery_id,
         error=error,

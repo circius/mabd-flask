@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>login</title>
-  </head>
-  <body>
-    <article>
-      You are not logged in.
-      To login, click the login-link in the email you received.
-      If you have lost the email, click here to request a new one.
-    </article>    
-  </body>  
-</html>
+{% extends "layout.html" %}
+{% block title %}login{% endblock title %}
+{% block breadcrumbs %}
+  <a href="{{url_for('user.index')}}">back to index</a>
+  >
+  <u>login</u>
+{% endblock breadcrumbs %}
+{% block content %}
+  <article>
+    You are not logged in.<br/>
+    To login, click the login-link in the email you received.<br/>
+    If you have lost the email, click here to request a new one.<br/>
+  </article>
+{% endblock content %}

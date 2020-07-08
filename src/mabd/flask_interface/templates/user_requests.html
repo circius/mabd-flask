@@ -1,35 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>My Requests</title>
-  </head>
-  <nav>
-    <a href="{{url_for('user.index')}}">back to index</a>
-    >
-    <u>my requests</u>
-  </nav>
-  <body>
-    
-    <h1>{{ current_user + "'s"}} requests</h1>
-    <ul>
-      {% for request in requests_with_offers %}
-        <li>
-          <a href="{{ url_for('user.matching_offers', request_id=request['airtable_uid']) }}">
-            {{request['item']}}</a>. {{request['matching_offers_count']}}
-            {% if request['matching_offers_count'] > 1 %}
-              offers.
-            {% else %}
-              offer.
-            {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-    <h2>requests with no matching offers</h2>
-    <ul>
-      {% for request in requests_no_offers %}
-        <li> {{request['item']}} </li>
-      {% endfor %}
-    </ul>
-  </body>  
-</html>
+{% extends "layout.html" %}
+{% block title %}my requests{% endblock title %}
+{% block breadcrumbs %}
+  <a href="{{url_for('user.index')}}">back to index</a>
+  >
+  <u>my requests</u>
+{% endblock breadcrumbs %}
+{% block content %}
+  <h1>{{ current_user + "'s"}} requests</h1>
+  <ul>
+    {% for request in requests_with_offers %}
+      <li>
+        <a href="{{ url_for('user.matching_offers', request_id=request['airtable_uid']) }}">
+          {{request['item']}}</a>. {{request['matching_offers_count']}}
+          {% if request['matching_offers_count'] > 1 %}
+            offers.
+          {% else %}
+            offer.
+          {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <h2>requests with no matching offers</h2>
+  <ul>
+    {% for request in requests_no_offers %}
+      <li> {{request['item']}} </li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

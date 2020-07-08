@@ -1,22 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>{{ requested_item_name }} request: matching offers</title>
-    <nav>
-      <a href="{{url_for('user.index')}}">index</a>
-      >
-      <a href="{{url_for('user.my_requests')}}">my requests</a>
-      >
-      <u>matching offers</u>
-    </nav>
-  </head>
-  <body>
-    <h1>matching offers for {{ requested_item_name }}</h1>
-    <ul>
-      {% for offer in offers %}
-        <li><a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_uid=offer['offer_uid'])}}">{{offer['item_name']}} (offer {{offer['offer_uid']}})</a></li>
-      {% endfor %}
-    </ul>
-  </body>  
-</html>
+{% extends "layout.html" %}
+{% block title %}{{ requested_item_name }} request: matching offers{% endblock title %}
+{% block breadcrumbs %}
+  <a href="{{url_for('user.index')}}">index</a>
+  >
+  <a href="{{url_for('user.my_requests')}}">my requests</a>
+  >
+  <u>matching offers</u>
+{% endblock breadcrumbs %}
+{% block content %}
+  <h1>matching offers for {{ requested_item_name }}</h1>
+  <ul>
+    {% for offer in offers %}
+      <li><a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_uid=offer['offer_uid'])}}">{{offer['item_name']}} (offer {{offer['offer_uid']}})</a></li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

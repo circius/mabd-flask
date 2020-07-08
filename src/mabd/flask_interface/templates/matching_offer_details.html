@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>details for {{offer['item_name']}}</title>
-    <nav>
-      <a href="{{url_for('user.index')}}">index</a>
-      >
-      <a href="{{url_for('user.my_requests')}}">my requests</a>
-      >
-      <a href="{{url_for('user.matching_offers', request_id=request_id)}}">matching offers</a>
-      >
-      <u>matching offer details</u>
-      >
-    </nav>
-  </head>
-  <body>
-    <h1>details for {{offer['item_name']}}</h1>
-    {% if offer['dimensions'] != []  %}
-      <h2>dimensions</h2>
-      {{ dimensions }}
-    {% endif %}
-    {% if offer['image_urls'] != [] %}
-      <h2> images </h2>
-      {% for image_url in offer['image_urls'] %}
+{% extends "layout.html" %}
+{% block title %}details for {{offer['item_name']}}{% endblock title %}
+{% block breadcrumbs %}
+  <a href="{{url_for('user.index')}}">index</a>
+  >
+  <a href="{{url_for('user.my_requests')}}">my requests</a>
+  >
+  <a href="{{url_for('user.matching_offers', request_id=request_id)}}">matching offers</a>
+  >
+  <u>matching offer details</u>
+{% endblock breadcrumbs %}
+{% block content %}
+  <h1>details for {{offer['item_name']}}</h1>
+  {% if offer['dimensions'] != []  %}
+    <h2>dimensions</h2>
+    {{ dimensions }}
+  {% endif %}
+  {% if offer['image_urls'] != [] %}
+    <h2> images </h2>
+    {% for image_url in offer['image_urls'] %}
       <img src="{{image_url}}"></img>
-      {% endfor %}
-    {% endif %}
-  </body>  
-</html>
+    {% endfor %}
+  {% endif %}
+{% endblock content %}
