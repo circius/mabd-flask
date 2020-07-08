@@ -152,6 +152,11 @@ def test_can_get_person_record_by_name():
 
     assert person_record.get_id() == "rec95fxPGFAmWsi0I"
 
+    person_name = "No-one"
+    person_record = mabd.get_person_by_person_name(person_name)
+
+    assert person_record is False
+
 
 def test_can_get_minimal_representation_from_record():
     mabd = MABD()
