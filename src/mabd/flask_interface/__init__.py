@@ -1,6 +1,9 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
 import os
+
+db = SQLAlchemy()
 
 
 def create_app(test_config=None):
@@ -15,6 +18,9 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
+    db.init_app(app)
 
     from . import admin
 
