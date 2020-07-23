@@ -39,7 +39,12 @@ def fulfil_deliveries():
 @bp.route("/user_management", methods=('GET', 'POST'))
 def user_management():
     if request.method == "POST":
-        return request.form['username']
+        username = request.form['username']
+        login_url = url_for("user.do_login", username=username)
+        return render_template(
+            "admin_user_management_show_link.html",
+            username=username,
+            login_url=login_url)
     else:
         return render_template(
         "admin_user_management.html")
