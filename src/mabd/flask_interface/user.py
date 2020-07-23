@@ -73,6 +73,8 @@ def my_requests():
 def matching_offers(request_id):
     requested_item_name = api.get_name_of_requested_item_from_requestID(request_id)
     matching_offer_dicts = api.get_readable_matching_offers_for_requestID(request_id)
+    for d in matching_offer_dicts:
+        print(d)
     return render_template(
         "matching_offers.html",
         offers=matching_offer_dicts,
@@ -81,10 +83,10 @@ def matching_offers(request_id):
     )
 
 
-@bp.route("/myrequests/<request_id>/<offer_uid>")
-def matching_offer_details(request_id, offer_uid):
-    matching_offer = api.get_readable_offer_by_offer_uid(offer_uid)
-
+@bp.route("/myrequests/<request_id>/<offer_number>")
+def matching_offer_details(request_id, offer_number):
+    matching_offer = api.get_readable_offer_by_offer_number(offer_number)
+    print(f"serving details for offer {offer_number}")
     return render_template(
         "matching_offer_details.html", offer=matching_offer, request_id=request_id
     )

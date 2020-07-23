@@ -84,17 +84,17 @@ available, or as a Record if not - or None.
         return delivery.pprint(self)
 
     ## getters - Offers
-    def get_readable_offer_by_offer_uid(self, offer_uid: int) -> dict:
-        """ consumes an offer-uid and produces the corresponding offer.
+    def get_readable_offer_by_offer_number(self, offer_number: int) -> dict:
+        """ consumes an offer-number and produces the corresponding offer.
 """
-        offer = self.get_offer_by_offer_uid(offer_uid)
+        offer = self.get_offer_by_offer_number(offer_number)
         return offer.get_minimal_representation(self)
 
-    def get_offer_by_offer_uid(self, offer_uid: int) -> Offer:
-        """consumes an offer-uid and produces the corresponding offer.
+    def get_offer_by_offer_number(self, offer_number: int) -> Offer:
+        """consumes an offer-number and produces the corresponding offer.
 
         """
-        return Offer(self.get_airtable("offers").match("uid", offer_uid))
+        return Offer(self.get_airtable("offers").match("offer_number", offer_number))
 
     def get_offer_by_id(self, offer_id: str) -> Offer:
         """" consume an offer_id and produce the corresponding Offer from the

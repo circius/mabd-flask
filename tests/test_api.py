@@ -88,8 +88,8 @@ def test_can_get_readable_matching_offers_for_requestID():
 
 
 def test_can_get_readable_offer_by_offer_uid():
-    offer_uid = 1
-    offer = api.get_readable_offer_by_offer_uid(offer_uid)
+    offer_number = 1
+    offer = api.get_readable_offer_by_offer_number(offer_number)
 
     assert offer["donor"] == "katie"
     assert "kitchen bits" in offer["item_name"]

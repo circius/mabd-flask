@@ -11,7 +11,11 @@
   <h1>matching offers for {{ requested_item_name }}</h1>
   <ul>
     {% for offer in offers %}
-      <li><a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_uid=offer['offer_uid'])}}">{{offer['item_name']}} (offer {{offer['offer_uid']}})</a></li>
+    <li>
+      <a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=offer['offer_number']) }}">
+        {{offer['item_name']}} (offer {{offer['offer_uid']}})
+      </a>
+    </li>
     {% endfor %}
   </ul>
 {% endblock content %}
