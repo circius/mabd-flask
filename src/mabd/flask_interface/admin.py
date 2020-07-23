@@ -11,6 +11,10 @@ def index():
         {
             "link_text": "delivery fulfilment",
             "relative_link": url_for("admin.fulfil_deliveries"),
+        },
+        {
+            "link_text": "user management",
+            "relative_link": url_for("admin.user_management"),
         }
     ]
     return render_template("admin_index.html", links=links_to_provide)
@@ -31,3 +35,11 @@ def fulfil_deliveries():
         delivery_num=delivery_id,
         error=error,
     )
+
+@bp.route("/user_management", methods=('GET', 'POST'))
+def user_management():
+    if request.method == "POST":
+        return request.form['username']
+    else:
+        return render_template(
+        "admin_user_management.html")

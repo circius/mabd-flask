@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block title %}generate user access link {% endblock title %}
+{% block content %}
+  <form method="post">
+    <label for="username">exact name of user on airtable</label>
+    <input type="text" name="username" id="username" required>
+    <input type="submit">
+  </form>
+{% endblock content %}
