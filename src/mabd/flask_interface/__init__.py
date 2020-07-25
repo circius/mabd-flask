@@ -3,8 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 import os
 
-db = SQLAlchemy()
-
 
 def create_app(test_config=None):
     app = Flask("mabd.flask_interface")
