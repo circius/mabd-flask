@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, url_for, Blueprint
 
 from .. import api
 
+from . import models
+
 bp = Blueprint("admin", __name__)
 
 
@@ -15,7 +17,7 @@ def index():
         {
             "link_text": "user management",
             "relative_link": url_for("admin.user_management"),
-        }
+        },
     ]
     return render_template("admin_index.html", links=links_to_provide)
 
@@ -36,15 +38,24 @@ def fulfil_deliveries():
         error=error,
     )
 
-@bp.route("/user_management", methods=('GET', 'POST'))
+@bp.route("/list_users")
+def list_users():
+    users = models.User.query.all()
+    mystring = ", ".join([user.__str__() for user in users])
+    print(type(mystring))
+    print(mystring)
+    return mystring
+
+
+@bp.route("/user_management", methods=("GET", "POST"))
 def user_management():
     if request.method == "POST":
-        username = request.form['username']
+        username = request.form["username"]
         login_url = url_for("user.do_login", username=username)
         return render_template(
             "admin_user_management_show_link.html",
             username=username,
-            login_url=login_url)
+            login_url=login_url,
+        )
     else:
-        return render_template(
-        "admin_user_management.html")
+        return render_template("admin_user_management.html")
