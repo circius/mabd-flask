@@ -39,4 +39,10 @@ def create_app(test_config=None):
 
     app.register_blueprint(user.bp, url_prefix="/")
 
+    # shell_context
+    from . import models
+    @app.shell_context_processor
+    def make_shell_context():
+        return {'db': db, 'User': models.User}
+
     return app
