@@ -18,7 +18,18 @@ def create_app(test_config=None):
         pass
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
+    from .models import db
+    from .models import migrate
+
     db.init_app(app)
+    migrate.init_app(app, db)
+    
+    with app.app_context():
+        db.create_all()
+
+    
+
+    ## submodules
 
     from . import admin
 
