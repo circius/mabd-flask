@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, url_for, Blueprint, redirect
 
+import flask_login
+
 from .. import api
 
 from . import models
 
 bp = Blueprint("admin", __name__)
 
-
 @bp.route("/")
+@flask_login.login_required
+@models.must_be_administrator
 def index():
     links_to_provide = [
         {
@@ -23,6 +26,8 @@ def index():
 
 
 @bp.route("/fulfilment")
+@flask_login.login_required
+@models.must_be_administrator
 def fulfil_deliveries():
     error = None
     delivery_id = request.args.get("delivery_id", default=-1, type=int)
@@ -39,6 +44,8 @@ def fulfil_deliveries():
     )
 
 @bp.route("/user_management", methods=("GET", "POST"))
+@flask_login.login_required
+@models.must_be_administrator
 def user_management():
     Users = models.User.query.all()
     user_dicts = [User.get_minimal_representation() for User in Users]
@@ -47,6 +54,8 @@ def user_management():
         user_dicts = user_dicts)
 
 @bp.route("/user_management/<id>", methods=("GET", "POST"))
+@flask_login.login_required
+@models.must_be_administrator
 def user_management_id(id):
     this_user = models.User.query.get(id)
 
@@ -66,6 +75,8 @@ def user_management_id(id):
     )
     
 @bp.route("/user_management/<id>/delete", methods=("GET", "POST"))
+@flask_login.login_required
+@models.must_be_administrator
 def user_management_delete(id):
     
     if request.method == "POST" and request.form['confirm_or_cancel'] == "confirm":
@@ -82,8 +93,11 @@ def user_management_delete(id):
     )
 
 @bp.route("/user_management/add", methods=("GET", "POST"))
+@flask_login.login_required
+@models.must_be_administrator
 def user_management_add():
     if request.method == "POST":
+        print("getting POST!")
         new_username = request.form["username"]
         new_airtable_username = request.form["airtable_username"]
         new_user = models.User(username=new_username, airtable_username=new_airtable_username)
@@ -94,6 +108,8 @@ def user_management_add():
     "admin_user_management_add.html")
 
 @bp.route("/user_management/<id>/newlink", methods=("GET", "POST"))
+@flask_login.login_required
+@models.must_be_administrator
 def user_management_newlink(id):
     this_user = models.User.query.get(id)
     link = this_user.get_login_link()

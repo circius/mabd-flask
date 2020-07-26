@@ -17,7 +17,6 @@ def create_app(test_config=None):
 
     models.login_manager.init_app(app)
     app.config['SECRET_KEY'] = utilities.get_env_var_checked("FLASK_WTF_SECRET_KEY")
-
     if test_config is None:
         pass
     else:

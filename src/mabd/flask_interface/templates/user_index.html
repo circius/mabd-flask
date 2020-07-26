@@ -2,7 +2,7 @@
 {% block title %}index{% endblock title %}
 {% block user_menu %}
   <div>
-    {% if user is none %}
+    {% if not current_user.is_authenticated %}
       <a href={{ url_for('user.login_info') }}>user login</a>
     {% endif %}
     <a href={{ url_for('user.logout') }}>logout</a>
@@ -19,8 +19,8 @@
       </ul>
     {% endif %}
   {% endwith %}
-  {% if user is not none %}
-    welcome, {{ user }}.
+  {% if current_user.is_authenticated %}
+    welcome, {{ current_user.username }}.
     <h1>user utilities</h1>
     <ul>
       {% for link in links %}

@@ -6,7 +6,7 @@
   <u>my requests</u>
 {% endblock breadcrumbs %}
 {% block content %}
-  <h1>{{ current_user + "'s"}} requests</h1>
+  <h1>{{ current_user.username + "'s"}} requests</h1>
   <ul>
     {% for request in requests_with_offers %}
       <li>

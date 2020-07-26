@@ -1,8 +1,10 @@
-from flask import url_for
+from functools import wraps
+
+from flask import url_for, g, redirect
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import UserMixin, LoginManager
+from flask_login import UserMixin, LoginManager, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -11,7 +13,20 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(user_id)
+
+
+def must_be_administrator(f):
+    def is_administratorP(user):
+        return user.is_administratorP()
+        
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_administratorP(current_user):
+            return login_manager.unauthorized()
+        return f(*args, **kwargs)
+    return decorated_function
+    
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,6 +41,11 @@ class User(UserMixin, db.Model):
 
     def __str__(self):
         return f"User {self.username}"
+
+    # predicates
+
+    def is_administratorP(self):
+        return self.administrator
 
     # methods - getters
 
