@@ -2,10 +2,11 @@
 {% block title %}
   <title>Mutual Aid Brighton deliveries app</title>
 {% endblock title %}
-<h1>utilities</h1>
-<ul>
-  {% for link in links %}
-    <li> <a href={{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
-  {% endfor %}
-</ul>
+{% block content %}
+  <h1>utilities</h1>
+  <ul>
+    {% for link in links %}
+      <li> <a href={{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
+    {% endfor %}
+  </ul>
 {% endblock content %}
