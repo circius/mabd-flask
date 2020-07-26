@@ -28,6 +28,7 @@ setuptools.setup(
         "Flask-SQLAlchemy",
         "flask-login",
         "flask-migrate",
+        "flask-security",
     ],
     entry_points="""""",
 )
