@@ -7,9 +7,13 @@ from flask import (
     abort,
     redirect,
     make_response,
+    flash
 )
 
+
 from .. import api
+
+from . import forms
 
 bp = Blueprint("user", __name__)
 
@@ -25,9 +29,18 @@ def index():
     return render_template("user_index.html", links=user_links, user=user)
 
 
-@bp.route("/login", endpoint="login_info")
+@bp.route("/login", endpoint="login_info", methods=['GET', 'POST'])
 def login():
-    return render_template("user_login.html")
+    form =forms.LoginForm()
+
+    if form.validate_on_submit():
+        flash('Login requested for user {}, remember_me={}'.format(
+            form.username.data, form.remember_me.data))
+        return redirect(url_for('user.index'))
+    
+    return render_template(
+        "user_login_form.html",
+        form=form)
 
 
 @bp.route("/login/<username>", endpoint="do_login")
