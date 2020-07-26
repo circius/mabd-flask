@@ -1,9 +1,29 @@
 {% extends "layout.html" %}
 {% block title %}generate user access link {% endblock title %}
 {% block content %}
-  <form method="post">
-    <label for="username">exact name of user on airtable</label>
-    <input type="text" name="username" id="username" required>
-    <input type="submit">
-  </form>
+  {% if user_dicts|length > 0 %}
+    <table>
+      <tr>
+        {% for key in user_dicts[0].keys() %}
+          <th scope=col>{{ key }}</th>
+        {% endfor %}
+        <th scope=col> edit entry </th>
+        <th scope=col> delete entry </th>
+        <th scope=col> generate login link </th>
+      </tr>
+      {% for user_dict in user_dicts %}
+        <tr>
+          {% for _, value in user_dict.items() %}
+            <td> {{ value }} </td>
+          {% endfor %}
+          <td> <a href="{{url_for('admin.user_management_id', id=user_dict['id'])}}">✎</a> </td>
+          <td> <a href="{{url_for('admin.user_management_delete', id=user_dict['id'])}}">❌</a></td>
+          <td> <a href="{{url_for('admin.user_management_newlink', id=user_dict['id'])}}">↗</a></td> 
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    There are no user accounts.
+  {% endif %}
+  <a href="{{url_for('admin.user_management_add')}}"> add user </a> 
 {% endblock content %}

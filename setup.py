@@ -26,7 +26,7 @@ setuptools.setup(
         "airtable-python-wrapper",
         "flask",
         "Flask-SQLAlchemy",
+        "flask-migrate",
     ],
     entry_points="""""",
 )
-

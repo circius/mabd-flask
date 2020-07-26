@@ -1,11 +1,15 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
 
 import os
 
 
 def create_app(test_config=None):
     app = Flask("mabd.flask_interface")
+
+    Bootstrap(app)
 
     if test_config is None:
         pass
@@ -18,16 +22,16 @@ def create_app(test_config=None):
         pass
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
     from .models import db
     from .models import migrate
 
     db.init_app(app)
     migrate.init_app(app, db)
-    
+
     with app.app_context():
         db.create_all()
-
-    
 
     ## submodules
 
@@ -41,8 +45,9 @@ def create_app(test_config=None):
 
     # shell_context
     from . import models
+
     @app.shell_context_processor
     def make_shell_context():
-        return {'db': db, 'User': models.User}
+        return {"db": db, "User": models.User}
 
     return app

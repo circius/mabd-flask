@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}generate user access link {% endblock title %}
+{% block content %}
+  Info for user {{ user_dict['id'] }}
+  <form method="post">
+    <fieldset>
+      <legend> editable user data </legend>
+      <label for="username">username on this app</label>
+      <input type="text" name="username" id="username" value={{user_dict["username"]}} required>
+      <label for="airtable_username">username on the airtable</label>
+      <input type="text" name="airtable_username" id="airtable_username" value={{user_dict["airtable_username"]}}>
+    </fieldset>
+    <input type="submit"> 
+  </form> 
+{% endblock content %}
