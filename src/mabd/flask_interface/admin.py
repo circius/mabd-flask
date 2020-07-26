@@ -8,7 +8,6 @@ bp = Blueprint("admin", __name__)
 
 
 @bp.route("/")
-@login_required
 def index():
     links_to_provide = [
         {
