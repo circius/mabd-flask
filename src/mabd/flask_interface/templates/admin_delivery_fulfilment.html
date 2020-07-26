@@ -7,7 +7,7 @@
   {% if delivery_dict_list|length == 0 %}
     there are no unfulfilled deliveries.
   {% else %}
-    <table>
+    <table class="table">
       <tr>
         {% for key in delivery_dict_list[0].keys() %}
           <th scope=col>{{ key }}</th>
@@ -22,7 +22,7 @@
             <form action="" method="get">
               <button type="submit"
                       name="delivery_id"
-                      class="fulfil_button"
+                      class="btn btn-primary"
                       value="{{ delivery_dict['delivery_number'] }}"> fulfil
               </button>
             </form>

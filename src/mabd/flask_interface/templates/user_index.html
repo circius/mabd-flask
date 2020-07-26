@@ -1,11 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}index{% endblock title %}
 {% block user_menu %}
-  {% if user is none %}
-    <a href={{ url_for('user.login_info') }}>user login</a>
-  {% endif %}
-  <a href={{ url_for('user.logout') }}>logout</a>
-  <a href={{ url_for('admin.index') }}>admin</a>
+  <div>
+    {% if user is none %}
+      <a href={{ url_for('user.login_info') }}>user login</a>
+    {% endif %}
+    <a href={{ url_for('user.logout') }}>logout</a>
+    <a href={{ url_for('admin.index') }}>admin</a>
+  </div>
 {% endblock user_menu %}
 {% block content %}
   {% if user is not none %}

@@ -2,7 +2,7 @@
 {% block title %}generate user access link {% endblock title %}
 {% block content %}
   {% if user_dicts|length > 0 %}
-    <table>
+    <table class="table">
       <tr>
         {% for key in user_dicts[0].keys() %}
           <th scope=col>{{ key }}</th>
@@ -25,5 +25,5 @@
   {% else %}
     There are no user accounts.
   {% endif %}
-  <a href="{{url_for('admin.user_management_add')}}"> add user </a> 
+  <a href="{{url_for('admin.user_management_add')}}" class="badge">add user</a> 
 {% endblock content %}
