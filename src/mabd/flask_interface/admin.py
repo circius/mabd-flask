@@ -1,18 +1,14 @@
-import secrets
-
-from flask import Flask, render_template, request, url_for, Blueprint, redirect
-
-import flask_login
+from flask import render_template, request, url_for, Blueprint
 
 from .. import api
 
-from . import models
+from . import extensions
 
 bp = Blueprint("admin", __name__)
 
+
 @bp.route("/")
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def index():
     links_to_provide = [
         {
@@ -28,8 +24,7 @@ def index():
 
 
 @bp.route("/fulfilment")
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def fulfil_deliveries():
     error = None
     delivery_id = request.args.get("delivery_id", default=-1, type=int)
@@ -45,79 +40,32 @@ def fulfil_deliveries():
         error=error,
     )
 
+
 @bp.route("/user_management", methods=("GET", "POST"))
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def user_management():
-    Users = models.User.query.all()
-    user_dicts = [User.get_minimal_representation() for User in Users]
-    return render_template(
-        "admin_user_management.html",
-        user_dicts = user_dicts)
+    return "to be implemented"
+
 
 @bp.route("/user_management/<id>", methods=("GET", "POST"))
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def user_management_id(id):
-    this_user = models.User.query.get(id)
+    return "to be implemented"
 
-    if request.method == "POST":
-        new_username = request.form["username"]
-        new_airtable_username = request.form["airtable_username"]
-        
-        this_user.set_username(new_username)
-        this_user.set_airtable_username(new_airtable_username)
-        models.db.session.commit()
 
-        return redirect(url_for("admin.user_management"))
-    
-    return render_template(
-        "admin_user_management_id.html",
-        user_dict = this_user.get_minimal_representation()
-    )
-    
 @bp.route("/user_management/<id>/delete", methods=("GET", "POST"))
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def user_management_delete(id):
-    
-    if request.method == "POST" and request.form['confirm_or_cancel'] == "confirm":
-        row_to_drop = models.User.query.filter_by(id=id)        
-        row_to_drop.delete()
-        models.db.session.commit()
-        return redirect(url_for("admin.user_management"))
+    return "to be implemented"
 
-    this_user = models.User.query.get(id)
-    user_dict = this_user.get_minimal_representation()
-    return render_template(
-        "admin_user_management_delete.html",
-        user_dict = user_dict
-    )
 
 @bp.route("/user_management/add", methods=("GET", "POST"))
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def user_management_add():
-    if request.method == "POST":
-        new_username = request.form["username"]
-        new_airtable_username = request.form["airtable_username"]
-        new_user_token = secrets.token_urlsafe(32)
-        new_user = models.User(username=new_username, airtable_username=new_airtable_username, login_token=new_user_token)
-        
-        models.db.session.add(new_user)
-        models.db.session.commit()
-        return redirect(url_for("admin.user_management"))
-    return render_template(
-    "admin_user_management_add.html")
+    return "to be implemented"
+
 
 @bp.route("/user_management/<id>/newlink", methods=("GET", "POST"))
-@flask_login.login_required
-@models.must_be_administrator
+@extensions.requires_auth
 def user_management_newlink(id):
-    this_user = models.User.query.get(id)
-    link = this_user.get_login_link()
-    return render_template(
-        "admin_user_management_newlink.html",
-        link=link
-    )
-    
+    return "to be implemented"

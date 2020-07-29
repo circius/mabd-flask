@@ -1,21 +1,30 @@
 from functools import wraps
 
-from flask_oidc import OpenIDConnect
-from keycloak import KeycloakOpenID
+from flask import session, redirect
 
-class CredentialStore(dict):
-    def __setitem__(self, sub, item):
-        print("running setitem")
-        return setattr(self, sub, item)
+from authlib.integrations.flask_client import OAuth
 
-    def __getitem__(self, item):
-        return getattr(self, item)
+# from auth0.v3.management import Auth0
 
-oidc_credentials = CredentialStore()
+oauth = OAuth()
 
-oidc = OpenIDConnect()
+auth0 = oauth.register(
+    "auth0",
+    client_id="w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
+    client_secret="C93f_tmGEIprENWNiAgERJLr_vCJ3hFVi-7v65cdBDg3hNyVFvVWf6i1qlgMXQei",
+    api_base_url="https://dev-jnz--huf.eu.auth0.com",
+    access_token_url="https://dev-jnz--huf.eu.auth0.com/oauth/token",
+    authorize_url="https://dev-jnz--huf.eu.auth0.com/authorize",
+    client_kwargs={"scope": "openid profile email",},
+)
 
-keycloak_openid = KeycloakOpenID(server_url="http://localhost:8080/auth/",
-                                 client_id="vanilla",
-                                 realm_name="demo",
-                                 client_secret_key="843893fc-edb7-4302-85bf-fa858ff26212")
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "profile" not in session:
+            # Redirect to Login page here
+            return redirect("/")
+        return f(*args, **kwargs)
+
+    return decorated

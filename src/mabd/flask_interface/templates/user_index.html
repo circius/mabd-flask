@@ -2,9 +2,7 @@
 {% block title %}index{% endblock title %}
 {% block user_menu %}
   <navbar>
-    {% if not current_user.is_authenticated %}
-      <a href={{ url_for('user.login_info') }}>user login</a>
-    {% endif %}
+    <a href={{ url_for('user.login_info') }}>user login</a>
     <a href={{ url_for('user.logout') }}>logout</a>
     <a href={{ url_for('admin.index') }}>admin</a>
   </navbar>
@@ -20,13 +18,10 @@
         </ul>
       {% endif %}
     {% endwith %}
-    {% if current_user.is_authenticated %}
-      welcome, {{ current_user.username }}.
       <h1>user utilities</h1>
       <ul>
         {% for link in links %}
           <li> <a href = {{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
         {% endfor %}
       </ul>
-    {% endif %}
   {% endblock content %}

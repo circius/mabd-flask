@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import url_for, g, redirect
+from flask import url_for
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -11,6 +11,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -19,14 +20,15 @@ def load_user(user_id):
 def must_be_administrator(f):
     def is_administratorP(user):
         return user.is_administratorP()
-        
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_administratorP(current_user):
             return login_manager.unauthorized()
         return f(*args, **kwargs)
+
     return decorated_function
-    
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,8 +61,8 @@ class User(UserMixin, db.Model):
         }
 
     def get_login_link(self):
-        return url_for('user.do_login', self.login_token)
-        
+        return url_for("user.do_login", self.login_token)
+
     # methods - setters
 
     def set_password(self, password):
