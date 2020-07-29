@@ -59,6 +59,6 @@ def create_app(test_config=None):
 
     @app.shell_context_processor
     def make_shell_context():
-        return {"db": db, "User": models.User}
+        return {"db": models.db, "User": models.User}
 
     return app
