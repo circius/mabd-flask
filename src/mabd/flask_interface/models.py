@@ -34,6 +34,7 @@ class User(UserMixin, db.Model):
     airtable_username = db.Column(db.String(80), unique=True)
     pw_hash = db.Column(db.String(128))
     administrator = db.Column(db.Boolean(), default=False)
+    login_token = db.Column(db.String(32), nullable=True)
 
     # self methods
     def __repr__(self):
@@ -58,7 +59,7 @@ class User(UserMixin, db.Model):
         }
 
     def get_login_link(self):
-        return url_for('user.do_login', username=self.airtable_username)
+        return url_for('user.do_login', self.login_token)
         
     # methods - setters
 

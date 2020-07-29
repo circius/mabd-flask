@@ -1,3 +1,5 @@
+import secrets
+
 from flask import Flask, render_template, request, url_for, Blueprint, redirect
 
 import flask_login
@@ -97,10 +99,11 @@ def user_management_delete(id):
 @models.must_be_administrator
 def user_management_add():
     if request.method == "POST":
-        print("getting POST!")
         new_username = request.form["username"]
         new_airtable_username = request.form["airtable_username"]
-        new_user = models.User(username=new_username, airtable_username=new_airtable_username)
+        new_user_token = secrets.token_urlsafe(32)
+        new_user = models.User(username=new_username, airtable_username=new_airtable_username, login_token=new_user_token)
+        
         models.db.session.add(new_user)
         models.db.session.commit()
         return redirect(url_for("admin.user_management"))
