@@ -8,13 +8,14 @@ from flask import (
     redirect,
     make_response,
     flash
+    g
 )
 
 import flask_login
 
 from .. import api
 
-from . import forms, models
+from . import forms, models, extensions
 
 bp = Blueprint("user", __name__)
 
