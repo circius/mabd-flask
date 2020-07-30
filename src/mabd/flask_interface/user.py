@@ -48,7 +48,7 @@ def auth_callback():
     return redirect(url_for("user.index"))
 
 
-@bp.route("/login", endpoint="login_info", methods=["GET", "POST"])
+@bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
     return extensions.auth0.authorize_redirect(
         redirect_uri=(url_for("user.auth_callback", _external=True))

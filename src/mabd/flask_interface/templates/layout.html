@@ -23,7 +23,7 @@
         </li>
         {% if 'profile' not in session.keys() %}
         <li class="nav-item">
-          <a href={{ url_for('user.login_info')}} class="nav-link">user login</a>
+          <a href={{ url_for('user.login')}} class="nav-link">user login</a>
         </li>
         {% else %}
         <li class="nav-item">
