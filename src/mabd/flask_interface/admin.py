@@ -9,6 +9,7 @@ bp = Blueprint("admin", __name__)
 
 @bp.route("/")
 @extensions.requires_auth
+@extensions.must_be_admin
 def index():
     links_to_provide = [
         {
