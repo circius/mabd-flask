@@ -1,12 +1,5 @@
 {% extends "layout.html" %}
 {% block title %}index{% endblock title %}
-{% block user_menu %}
-  <navbar>
-    <a href={{ url_for('user.login_info') }}>user login</a>
-    <a href={{ url_for('user.logout') }}>logout</a>
-    <a href={{ url_for('admin.index') }}>admin</a>
-  </navbar>
-{% endblock user_menu %}
 {% block content %}
   <div id="main">
     {% with messages = get_flashed_messages() %}
@@ -18,10 +11,14 @@
         </ul>
       {% endif %}
     {% endwith %}
-      <h1>user utilities</h1>
+    {% if 'profile' in session.keys() %}
+      <h5>user utilities</h5>
       <ul>
         {% for link in links %}
           <li> <a href = {{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
         {% endfor %}
       </ul>
+    {% else %}
+      please <a href="{{url_for('user.login')}}">login</a>.
+    {% endif %}
   {% endblock content %}

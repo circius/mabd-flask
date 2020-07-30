@@ -1,29 +1,30 @@
 {% extends "layout.html" %}
 {% block title %}my requests{% endblock title %}
 {% block breadcrumbs %}
-  <a href="{{url_for('user.index')}}">back to index</a>
-  >
-  <u>my requests</u>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item" aria-current="page"><a href="{{url_for('user.index')}}">home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">my requests</li>
+  </ol>
 {% endblock breadcrumbs %}
 {% block content %}
-  <h1>{{ airtable_username + "'s"}} requests</h1>
-  <ul>
+  <ul class="list-group">
     {% for request in requests_with_offers %}
-      <li>
+      <li class="list-group-item">
         <a href="{{ url_for('user.matching_offers', request_id=request['airtable_uid']) }}">
-          {{request['item']}}</a>. {{request['matching_offers_count']}}
+          {{request['item']}}</a>. ({{request['matching_offers_count']}}
           {% if request['matching_offers_count'] > 1 %}
-            offers.
+            offers)
           {% else %}
-            offer.
+            offer)
           {% endif %}
       </li>
     {% endfor %}
   </ul>
-  <h2>requests with no matching offers</h2>
-  <ul>
+  <hr />
+  <h5>requests with no matching offers</h2>
+  <ul class="list-group">
     {% for request in requests_no_offers %}
-      <li> {{request['item']}} </li>
+      <li class="list-group-item"> {{request['item']}} </li>
     {% endfor %}
   </ul>
 {% endblock content %}

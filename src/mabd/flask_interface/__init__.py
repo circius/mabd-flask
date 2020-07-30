@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_bootstrap import Bootstrap
 
 from . import extensions
 
@@ -10,8 +9,6 @@ import os
 
 def create_app(test_config=None):
     app = Flask("mabd.flask_interface")
-
-    Bootstrap(app)
 
     extensions.oauth.init_app(app)
 

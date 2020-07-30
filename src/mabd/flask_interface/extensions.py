@@ -4,8 +4,6 @@ from flask import session, redirect
 
 from authlib.integrations.flask_client import OAuth
 
-# from auth0.v3.management import Auth0
-
 oauth = OAuth()
 
 auth0 = oauth.register(

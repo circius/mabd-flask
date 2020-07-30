@@ -1,19 +1,20 @@
 {% extends "layout.html" %}
 {% block title %}{{ requested_item_name }} request: matching offers{% endblock title %}
 {% block breadcrumbs %}
-  <a href="{{url_for('user.index')}}">index</a>
-  >
-  <a href="{{url_for('user.my_requests')}}">my requests</a>
-  >
-  <u>matching offers</u>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item" aria-current="page"><a href="{{url_for('user.index')}}">home</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{url_for('user.my_requests')}}">my requests</a></li>
+    <li class="breadcrumb-item active" aria-current="page">matching offers</li>
+  </ol>
 {% endblock breadcrumbs %}
 {% block content %}
-  <h1>matching offers for {{ requested_item_name }}</h1>
-  <ul>
+  <h5>matching offers for {{ requested_item_name }}</h5>
+  <ul class="list-group">
     {% for offer in offers %}
-    <li>
+    <li class="list-group-item">
+      offer {{offer['offer_number']}}:
       <a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=offer['offer_number']) }}">
-        {{offer['item_name']}} (offer {{offer['offer_uid']}})
+        {{offer['item_name']}} 
       </a>
     </li>
     {% endfor %}
