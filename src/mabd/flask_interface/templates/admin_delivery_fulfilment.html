@@ -1,16 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}unfulfilled deliveries{% endblock title %}
 {% block content %}
-  {% if error is not none %}
-    {{ error }}
-  {% endif %}
   {% if delivery_dict_list|length == 0 %}
     there are no unfulfilled deliveries.
   {% else %}
     <table class="table">
       <tr>
         {% for key in delivery_dict_list[0].keys() %}
-          <th scope=col>{{ key }}</th>
+          <th scope="col">{{ key }}</th>
         {% endfor %}
       </tr>
       {% for delivery_dict in delivery_dict_list %}
