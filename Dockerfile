@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt
 COPY . /opt/app
 RUN pip install -e ./
 
-gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
+RUN gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
