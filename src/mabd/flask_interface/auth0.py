@@ -9,7 +9,7 @@ from auth0.v3.management import Auth0
 
 ## management api stuff
 
-AUTH0_DOMAIN = os.get_env("AUTH0_DOMAIN")
-MGMT_API_TOKEN = os.get_env("AUTH0_MGMT_API_TOKEN")
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
+MGMT_API_TOKEN = os.getenv("AUTH0_MGMT_API_TOKEN")
 
 auth0 = Auth0(AUTH0_DOMAIN, MGMT_API_TOKEN)
