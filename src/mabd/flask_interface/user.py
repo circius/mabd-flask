@@ -1,6 +1,6 @@
 import json
 
-from flask import render_template, url_for, Blueprint, redirect, flash, session
+from flask import render_template, url_for, Blueprint, redirect, flash, session, request
 
 from six.moves.urllib.parse import urlencode
 
