@@ -12,8 +12,6 @@ def create_app(test_config=None):
 
     extensions.oauth.init_app(app)
 
-    app.register_error_handler(auth0.AuthError, auth0.handle_auth_error)
-
     if test_config is None:
         app.config.from_object(config.Config)
     else:

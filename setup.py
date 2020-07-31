@@ -29,7 +29,11 @@ setuptools.setup(
 	"python-jose",
 	"Authlib",
 	"auth0-python",
-	"oauth2client"
+	"oauth2client",
+        "gunicorn"
     ],
-    entry_points="""""",
+    entry_points="""
+    [console_scripts]
+    mabd-webservice = mabd.flask_interface.cli:cli
+""",
 )
