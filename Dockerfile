@@ -8,4 +8,4 @@ COPY . /opt/app
 RUN pip install -e ./
 
 # RUN mabd-webservice
-RUN gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
+CMD gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
