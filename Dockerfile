@@ -4,7 +4,7 @@ COPY requirements.txt /opt/app/requirements.txt
 WORKDIR /opt/app
 RUN pip install -r requirements.txt
 COPY . /opt/app
-RUN export init.sh
+# RUN export init.sh # didn't get this working yet, try without
 RUN pip install -e ./
 
 RUN flask run
