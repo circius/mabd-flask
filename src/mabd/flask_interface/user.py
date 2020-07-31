@@ -51,7 +51,7 @@ def auth_callback(code=None):
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
     extensions.oauth_auth0_client.save_authorize_data(request)
-    return extensions.flask_auth0.authorize_redirect(
+    return extensions.oauth_auth0_client.authorize_redirect(
         redirect_uri=(url_for("user.auth_callback", _external=True))
     )
 
@@ -66,7 +66,7 @@ def logout():
         "client_id": "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
     }
     return redirect(
-        extensions.flask_auth0.api_base_url + "/v2/logout?" + urlencode(params)
+        extensions.oauth_auth0_client.api_base_url + "/v2/logout?" + urlencode(params)
     )
 
 
