@@ -6,6 +6,7 @@ from . import extensions, auth0, config
 
 from .. import utilities
 
+
 def create_app(test_config=None):
     app = Flask("mabd.flask_interface")
 

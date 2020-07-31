@@ -10,7 +10,7 @@ from . import mabd_secrets
 
 oauth = OAuth()
 
-auth0 = oauth.register(
+flask_auth0 = oauth.register(
     "auth0",
     client_id="w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
     client_secret="C93f_tmGEIprENWNiAgERJLr_vCJ3hFVi-7v65cdBDg3hNyVFvVWf6i1qlgMXQei",
@@ -19,6 +19,7 @@ auth0 = oauth.register(
     authorize_url="https://dev-jnz--huf.eu.auth0.com/authorize",
     client_kwargs={"scope": "openid profile email",},
 )
+
 
 def requires_auth(f):
     @wraps(f)
@@ -30,10 +31,11 @@ def requires_auth(f):
 
     return decorated
 
+
 def must_be_admin(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        current_user_email = session["jwt_payload"]['email']
+        current_user_email = session["jwt_payload"]["email"]
         if current_user_email not in mabd_secrets.admin_emails_list:
             print(f"{current_user_email} not in {mabd_secrets.admin_emails_list}")
             return redirect("/")
