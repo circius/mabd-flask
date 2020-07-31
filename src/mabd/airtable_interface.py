@@ -2,13 +2,13 @@
 """ encapsulates functions for getting airtable data
 
 """
+import os
 from typing import List, Dict
+
 from airtable import Airtable
 
-from mabd import utilities
-
-AIRTABLE_API_KEY = utilities.get_env_var_checked("AIRTABLE_API_KEY")
-BASE = utilities.get_env_var_checked("BASE_ID")
+AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
+BASE = os.getenv("BASE_ID")
 
 
 def get_all_tables(table_names) -> Dict[str, Airtable]:
