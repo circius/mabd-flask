@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}generate user access link {% endblock title %}
-{% %}
 {% block content %}
   {% if user_dicts|length > 0 %}
     <table class="table">
       <tr>
-        {% for key in user_dicts[0].keys() %}
+        {% for key in user_dicts[0].keys() if key not in do_not_show_in_table  %}
           <th scope=col>{{ key }}</th>
         {% endfor %}
         <th scope=col> edit entry </th>
@@ -14,11 +13,12 @@
       </tr>
       {% for user_dict in user_dicts %}
         <tr>
-          {% for _, value in user_dict.items() %}
+          {% for key, value in user_dict.items() if key not in do_not_show_in_table %}
             <td> {{ value }} </td>
           {% endfor %}
-          <td> <a href="{{url_for('admin.user_management_id', id=user_dict['id'])}}">✎</a> </td>
-          <td> <a href="{{url_for('admin.user_management_delete', id=user_dict['id'])}}">❌</a></td>
+          <td>
+            <a href="{{url_for('admin.user_management_id', urlsafe_id=user_dict['user_id_urlsafe'])}}">✎</a> </td>
+          <td> <a href="{{url_for('admin.user_management_delete', urlsafe_id=user_dict['user_id_urlsafe'])}}">❌</a></td>    
           <td> <a href="{{url_for('admin.user_management_newlink', id=user_dict['id'])}}">↗</a></td> 
         </tr>
       {% endfor %}

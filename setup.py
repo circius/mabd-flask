@@ -25,9 +25,6 @@ setuptools.setup(
     install_requires=[
         "airtable-python-wrapper",
         "flask",
-        "Flask-SQLAlchemy",
-        "flask-login",
-        "flask-migrate",
     ],
     entry_points="""""",
 )

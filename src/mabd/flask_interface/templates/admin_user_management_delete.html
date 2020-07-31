@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}generate user access link {% endblock title %}
 {% block content %}
-Are you sure you want to delete user {{ user_dict['id'] }}, {{ user_dict['username']}}? This is irreversible.
+Are you sure you want to delete user {{ user_id }}, with email {{ user_email }}? This is irreversible.
 <form action="" method="post">
   <button type="submit"
           name="confirm_or_cancel"

@@ -1,15 +1,29 @@
 {% extends "layout.html" %}
 {% block title %}generate user access link {% endblock title %}
 {% block content %}
-  Info for user {{ user_dict['id'] }}
+  Info for user {{ user_dict['nickname'] }}
+  {{user_dict}}
   <form method="post">
     <fieldset>
-      <legend> editable user data </legend>
-      <label for="username">username on this app</label>
-      <input type="text" name="username" id="username" value={{user_dict["username"]}} required>
-      <label for="airtable_username">username on the airtable</label>
-      <input type="text" name="airtable_username" id="airtable_username" value={{user_dict["airtable_username"]}}>
+      <div class="form-group">
+        <label for="email">email address</label>
+        <input type="text" class="form-control" name="email" id="email" value={{user_dict["email"]}} readonly>
+      </div>
+      <div class="form-group">
+        <label for="nickname">nickname</label>
+        <input type="text" class="form-control" name="nickname" id="nickname" value={{user_dict["nickname"]}} required>
+      </div>
+      <div class="form-group">
+        <label for="airtable_username">airtable username</label>
+        <input type="text" class="form-control" name="airtable_username" id="airtable_username"
+               {% if user_dict["app_metadata"] is not none %}
+                 value="{{user_dict["app_metadata"]['airtable_username']}}" 
+               {% else %}
+                 value="None"
+               {% endif %}
+               >
+      </div>
     </fieldset>
-    <input type="submit"> 
+    <button type="submit" class="btn btn-primary"> Submit</button>
   </form> 
 {% endblock content %}

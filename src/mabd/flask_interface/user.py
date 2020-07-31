@@ -30,9 +30,9 @@ def dashboard():
 
 
 @bp.route("auth_callback")
-def auth_callback():
+def auth_callback(code=None):
     extensions.auth0.authorize_access_token()
-    resp = extensions.auth0.get("userinfo")
+    resp = extensions.flask_auth0.get("userinfo")
     userinfo = resp.json()
 
     # Store the user information in flask session.
@@ -50,7 +50,7 @@ def auth_callback():
 
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
-    return extensions.auth0.authorize_redirect(
+    return extensions.flask_auth0.authorize_redirect(
         redirect_uri=(url_for("user.auth_callback", _external=True))
     )
 
@@ -64,7 +64,7 @@ def logout():
         "returnTo": url_for("user.index", _external=True),
         "client_id": "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
     }
-    return redirect(extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params))
+    return redirect(extensions.flask_auth0.api_base_url + "/v2/logout?" + urlencode(params))
 
 
 @bp.route("/myrequests")

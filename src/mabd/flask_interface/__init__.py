@@ -1,20 +1,20 @@
-from flask import Flask
-
-from . import extensions
-
-from .. import utilities
-
 import os
 
+from flask import Flask
+
+from . import extensions, auth0, config
+
+from .. import utilities
 
 def create_app(test_config=None):
     app = Flask("mabd.flask_interface")
 
     extensions.oauth.init_app(app)
 
-    app.config["SECRET_KEY"] = utilities.get_env_var_checked("FLASK_WTF_SECRET_KEY")
+    app.register_error_handler(auth0.AuthError, auth0.handle_auth_error)
+
     if test_config is None:
-        pass
+        app.config.from_object(config.Config)
     else:
         app.config.from_mapping(test_config)
 
