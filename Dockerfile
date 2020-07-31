@@ -7,5 +7,5 @@ COPY . /opt/app
 # RUN export init.sh # didn't get this working yet, try without
 RUN pip install -e ./
 
-RUN flask run
+RUN mabd-webservice
 # RUN gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
