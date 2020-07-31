@@ -25,6 +25,11 @@ setuptools.setup(
     install_requires=[
         "airtable-python-wrapper",
         "flask",
+	"Flask-WTF",
+	"python-jose",
+	"Authlib",
+	"auth0-python",
+	"oauth2client"
     ],
     entry_points="""""",
 )
