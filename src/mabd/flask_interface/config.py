@@ -1,4 +1,4 @@
-from .. import utilities
+import os
 
 
 class Config(object):
@@ -8,7 +8,7 @@ class Config(object):
     print("loading base config")
     DEBUG = False
     TESTING = False
-    SECRET_KEY = utilities.get_env_var_checked("SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 class DevelopmentConfig(Config):
