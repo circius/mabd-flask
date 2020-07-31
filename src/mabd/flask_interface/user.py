@@ -29,9 +29,9 @@ def dashboard():
     )
 
 
-@bp.route("auth_callback")
+@bp.route("/auth_callback")
 def auth_callback(code=None):
-    extensions.auth0.authorize_access_token()
+    extensions.flask_auth0.authorize_access_token()
     resp = extensions.flask_auth0.get("userinfo")
     userinfo = resp.json()
 
