@@ -31,8 +31,8 @@ def dashboard():
 
 @bp.route("/auth_callback")
 def auth_callback(code=None):
-    extensions.oauth_auth0_client.authorize_access_token()
-    resp = extensions.oauth_auth0_client.get("userinfo")
+    token = extensions.auth0.authorize_access_token()
+    resp = extensions.auth0.get("userinfo")
     userinfo = resp.json()
 
     # Store the user information in flask session.
@@ -47,13 +47,12 @@ def auth_callback(code=None):
 
     return redirect(url_for("user.index"))
 
-
+# this DOES NOT WORK. review https://docs.authlib.org/en/latest/client/flask.html
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
-    extensions.oauth_auth0_client.save_authorize_data(request)
-    return extensions.oauth_auth0_client.authorize_redirect(
-        redirect_uri=(url_for("user.auth_callback", _external=True))
-    )
+    # extensions.auth0.save_authorize_data(request, "state"=])
+    redirect_uri = url_for("user.auth_callback", _external=True)
+    return extensions.auth0.authorize_redirect(redirect_uri)
 
 
 @bp.route("/logout")
@@ -66,7 +65,7 @@ def logout():
         "client_id": "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
     }
     return redirect(
-        extensions.oauth_auth0_client.api_base_url + "/v2/logout?" + urlencode(params)
+        extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params)
     )
 
 

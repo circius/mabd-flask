@@ -3,22 +3,13 @@ import json
 from functools import wraps
 
 from flask import session, redirect
+from . import mabd_secrets
 
 from authlib.integrations.flask_client import OAuth
 
-from . import mabd_secrets
-
 oauth = OAuth()
 
-oauth_auth0_client = oauth.register(
-    "auth0",
-    client_id="w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
-    client_secret="C93f_tmGEIprENWNiAgERJLr_vCJ3hFVi-7v65cdBDg3hNyVFvVWf6i1qlgMXQei",
-    api_base_url="https://dev-jnz--huf.eu.auth0.com",
-    access_token_url="https://dev-jnz--huf.eu.auth0.com/oauth/token",
-    authorize_url="https://dev-jnz--huf.eu.auth0.com/authorize",
-    client_kwargs={"scope": "openid profile email",},
-)
+auth0 = oauth.register("auth0") # get settings from app.config
 
 
 def requires_auth(f):
