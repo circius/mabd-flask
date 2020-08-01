@@ -8,6 +8,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
+    SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME")
 
     # authlib auth0 client settings
     AUTH0_CLIENT_ID = "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0"
