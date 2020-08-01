@@ -35,6 +35,9 @@ def auth_callback(code=None):
     resp = extensions.auth0.get("userinfo")
     userinfo = resp.json()
 
+    # print(f"token is {token}")
+    # print(f"resp is {resp}")
+
     # Store the user information in flask session.
     session["jwt_payload"] = userinfo
     session["profile"] = {
@@ -50,7 +53,6 @@ def auth_callback(code=None):
 # this DOES NOT WORK. review https://docs.authlib.org/en/latest/client/flask.html
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
-    # extensions.auth0.save_authorize_data(request, "state"=])
     redirect_uri = url_for("user.auth_callback", _external=True)
     return extensions.auth0.authorize_redirect(redirect_uri)
 

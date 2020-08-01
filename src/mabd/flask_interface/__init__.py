@@ -1,4 +1,4 @@
-import os
+import os, logging, sys
 
 from flask import Flask
 
@@ -7,15 +7,26 @@ from . import extensions, auth0, config
 from .. import utilities
 
 
-def create_app(test_config=None):
+def create_app():
     app = Flask("mabd.flask_interface")
+
+    log = logging.getLogger('authlib')
+    log.addHandler(logging.StreamHandler(sys.stdout))
+    log.setLevel(logging.DEBUG)
 
     extensions.oauth.init_app(app)
 
-    if test_config is None:
-        app.config.from_object(config.Config)
+    flask_config = os.getenv("FLASK_CONFIG_OBJECT")
+    if flask_config == "Development":
+        print("running development")
+        app.config.from_object(config.DevelopmentConfig)
     else:
-        app.config.from_mapping(test_config)
+        app.config.from_object(config.Config)
+
+    # if test_config is None:
+    #     app.config.from_object(config.Config)
+    # else:
+    #     app.config.from_mapping(test_config)
 
     try:
         os.makedirs(app.instance_path)
