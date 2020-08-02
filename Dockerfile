@@ -10,6 +10,6 @@ COPY . ./
 
 RUN pip install -e ./
 
-CMD mabd-webservice
+CMD gunicorn "mabd.flask_interface:create_app()"
 # CMD mabd-webservice
 # CMD gunicorn --bind 0.0.0.0:5000 mabd.flask_interface.cli:cli
