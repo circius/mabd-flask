@@ -1,5 +1,7 @@
 import json
 
+import os
+
 from flask import render_template, url_for, Blueprint, redirect, flash, session, request
 
 from six.moves.urllib.parse import urlencode
@@ -53,7 +55,11 @@ def auth_callback(code=None):
 # this DOES NOT WORK. review https://docs.authlib.org/en/latest/client/flask.html
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
-    redirect_uri = url_for("user.auth_callback", _external=True)
+    am_i_deployed = os.getenv('AM_I_DEPLOYED')
+    if am_i_deployed == True:
+        redirect_uri = os.getenv("DEPLOYMENT_CALLBACK")
+    else:
+        redirect_uri = url_for("user.auth_callback", _external=True)
     return extensions.auth0.authorize_redirect(redirect_uri)
 
 
