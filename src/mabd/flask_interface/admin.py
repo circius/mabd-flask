@@ -52,7 +52,7 @@ def fulfil_deliveries():
 @extensions.requires_auth
 def connections():
     connections_json_list = auth0.auth0.connections.all()
-    return f"there are {len(connections_dict_list)} connections"
+    return f"there are {len(connections_json_list)} connections."
 
 
 @bp.route("/user_management", methods=("GET", "POST"))
