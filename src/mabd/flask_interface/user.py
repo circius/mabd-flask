@@ -56,7 +56,7 @@ def auth_callback(code=None):
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
     am_i_deployed = os.getenv('AM_I_DEPLOYED')
-    if am_i_deployed == True:
+    if am_i_deployed == "True":
         redirect_uri = os.getenv("DEPLOYMENT_CALLBACK")
     else:
         redirect_uri = url_for("user.auth_callback", _external=True)
