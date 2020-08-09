@@ -11,8 +11,11 @@
         </ul>
       {% endif %}
     {% endwith %}
-    {% if 'profile' in session.keys() %}
-      <h5>user utilities</h5>
+        {% if 'profile' in session.keys() %}
+        <div>
+          Welcome, {{session['profile']['name']}}
+        </div>
+        <h5>user utilities</h5>
       <ul>
         {% for link in links %}
           <li> <a href = {{ link['relative_link'] }}> {{ link['link_text'] }}</a> </li>
