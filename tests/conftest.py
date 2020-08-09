@@ -31,7 +31,8 @@ def mock_get_airtable(monkeypatch):
 def app():
     """ create and configure a new flask app instance for each test.
 """
-    app = create_app({"TESTING": True})
+    app = create_app()
+    app.config["SECRET_KEY"] = "very_secret!"
     yield app
 
 
