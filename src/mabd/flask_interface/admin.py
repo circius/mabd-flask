@@ -1,6 +1,6 @@
 import json, pprint, urllib
 
-from flask import render_template, request, url_for, Blueprint, redirect
+from flask import render_template, request, url_for, Blueprint, redirect, flash
 
 from .. import api
 
@@ -22,10 +22,6 @@ def index():
             "link_text": "user management",
             "relative_link": url_for("admin.user_management"),
         },
-        {
-            "link_text": "current connections",
-            "relative_link": url_for("admin.connections"),
-        },
     ]
     return render_template("admin_index.html", links=links_to_provide)
 
@@ -40,19 +36,12 @@ def fulfil_deliveries():
         if result is False:
             error = f"No unfulfilled delivery has the number {delivery_id}"
     delivery_dicts = api.get_readable_unfulfilled_deliveries()
+    flash(error)
     return render_template(
         "admin_delivery_fulfilment.html",
         delivery_dict_list=delivery_dicts,
         delivery_num=delivery_id,
-        error=error,
     )
-
-
-@bp.route("/connections")
-@extensions.requires_auth
-def connections():
-    connections_json_list = auth0.auth0.connections.all()
-    return f"there are {len(connections_json_list)} connections."
 
 
 @bp.route("/user_management", methods=("GET", "POST"))
