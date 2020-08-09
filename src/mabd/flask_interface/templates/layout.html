@@ -5,32 +5,32 @@
       <!-- Required meta tags -->
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
-      {% block styles %}
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-      {% endblock %}
+            {% block styles %}
+              <!-- Bootstrap CSS -->
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+          {% endblock %}
 
-      <title>MABD - {% block title %} {% endblock title %}</title>
-    {% endblock %}
+          <title>MABD - {% block title %} {% endblock title %}</title>
+        {% endblock %}
   </head>
   <body class="container-sm">
     <nav class="navbar navbar-expand-sm navbar-light bg-light mr-auto">
       <a class="navbar-brand" href="#">mabd</a>
       {% block navbar %}
-      <ul class = "navbar-nav mr-auto justify-content-end d-flex ml-auto">
-        <li class="nav-item">
-          <a href={{ url_for('admin.index')}} class="nav-link">admin</a>
-        </li>
-        {% if 'profile' not in session.keys() %}
-        <li class="nav-item">
-          <a href={{ url_for('user.login')}} class="nav-link">user login</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a href={{ url_for('user.logout')}} class="nav-link">logout</a>
-        </li>
-        {% endif %}
-      </ul>
+        <ul class = "navbar-nav mr-auto justify-content-end d-flex ml-auto">
+          <li class="nav-item">
+            <a href={{ url_for('admin.index')}} class="nav-link">admin</a>
+          </li>
+          {% if 'profile' not in session.keys() %}
+            <li class="nav-item">
+              <a href={{ url_for('user.login')}} class="nav-link">user login</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a href={{ url_for('user.logout')}} class="nav-link">logout</a>
+            </li>
+          {% endif %}
+        </ul>
       {% endblock navbar %}
     </nav>
     <nav aria-label="breadcrumb">
@@ -38,7 +38,15 @@
       {% endblock breadcrumbs %}
     </nav>
 </div>
-<!-- Your page content -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+      {% for message in messages %}
+        <li class="alert alert-danger"> {{ message }} </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 {% block content %}{% endblock %}
 
 {% block scripts %}
