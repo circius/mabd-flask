@@ -10,23 +10,14 @@ from .. import utilities
 def create_app():
     app = Flask("mabd.flask_interface")
 
-    log = logging.getLogger('authlib')
-    log.addHandler(logging.StreamHandler(sys.stdout))
-    log.setLevel(logging.DEBUG)
-
     extensions.oauth.init_app(app)
 
-    flask_config = os.getenv("FLASK_CONFIG_OBJECT")
-    if flask_config == "Development":
-        print("running development")
+    config_to_load = os.getenv("CONFIG_TO_LOAD")
+
+    if config_to_load == "development":
         app.config.from_object(config.DevelopmentConfig)
     else:
         app.config.from_object(config.Config)
-
-    # if test_config is None:
-    #     app.config.from_object(config.Config)
-    # else:
-    #     app.config.from_mapping(test_config)
 
     try:
         os.makedirs(app.instance_path)
