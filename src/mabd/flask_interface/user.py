@@ -58,6 +58,7 @@ def login():
     am_i_deployed = os.getenv('AM_I_DEPLOYED')
     if am_i_deployed == "True":
         redirect_uri = os.getenv("DEPLOYMENT_CALLBACK")
+        print(f"redirecting to {redirect_url} ")
     else:
         redirect_uri = url_for("user.auth_callback", _external=True)
     return extensions.auth0.authorize_redirect(redirect_uri)
