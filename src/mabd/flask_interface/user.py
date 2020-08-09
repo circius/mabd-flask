@@ -8,7 +8,7 @@ from six.moves.urllib.parse import urlencode
 
 from .. import api
 
-from . import extensions
+from . import extensions, auth0
 
 bp = Blueprint("user", __name__)
 
@@ -21,24 +21,11 @@ def index():
     return render_template("user_index.html", links=user_links)
 
 
-@bp.route("/dashboard")
-@extensions.requires_auth
-def dashboard():
-    return render_template(
-        "dashboard.html",
-        userinfo=session["profile"],
-        userinfo_pretty=json.dumps(session["jwt_payload"], indent=4),
-    )
-
-
 @bp.route("/auth_callback")
-def auth_callback(code=None):
+def auth_callback():
     token = extensions.auth0.authorize_access_token()
     resp = extensions.auth0.get("userinfo")
     userinfo = resp.json()
-
-    # print(f"token is {token}")
-    # print(f"resp is {resp}")
 
     # Store the user information in flask session.
     session["jwt_payload"] = userinfo
@@ -47,20 +34,15 @@ def auth_callback(code=None):
         "name": userinfo["name"],
         "picture": userinfo["picture"],
     }
-    message = f"logged in "
+    message = "logged in"
     flash(message)
 
     return redirect(url_for("user.index"))
 
-# this DOES NOT WORK. review https://docs.authlib.org/en/latest/client/flask.html
+
 @bp.route("/login", endpoint="login", methods=["GET", "POST"])
 def login():
-    am_i_deployed = os.getenv('AM_I_DEPLOYED')
-    if am_i_deployed == "True":
-        redirect_uri = os.getenv("DEPLOYMENT_CALLBACK")
-        print(f"redirecting to {redirect_url} ")
-    else:
-        redirect_uri = url_for("user.auth_callback", _external=True)
+    redirect_uri = url_for("user.auth_callback", _external=True)
     return extensions.auth0.authorize_redirect(redirect_uri)
 
 
@@ -73,9 +55,7 @@ def logout():
         "returnTo": url_for("user.index", _external=True),
         "client_id": "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
     }
-    return redirect(
-        extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params)
-    )
+    return redirect(extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params))
 
 
 @bp.route("/myrequests")
