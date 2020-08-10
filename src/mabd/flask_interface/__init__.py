@@ -8,7 +8,7 @@ from .. import utilities
 
 
 def create_app():
-    app = Flask("mabd.flask_interface")
+    app = Flask(__name__)
 
     extensions.oauth.init_app(app)
 
