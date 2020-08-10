@@ -62,12 +62,13 @@ def logout():
 @extensions.requires_auth
 def my_requests():
     airtable_username = session["profile"]["name"]
-    if airtable_username == "None":
+
+    try:
+        requests = api.get_readable_unfulfilled_requests_of_person(airtable_username)
+    except:
         error = "This account is misconfigured. Please contact us to sort it out."
         flash(error)
         redirect("user.index")
-
-    requests = api.get_readable_unfulfilled_requests_of_person(airtable_username)
 
     requests_with_matching_offers = [
         request for request in requests if request["matching_offers_count"] > 0
@@ -89,15 +90,33 @@ def my_requests():
 @extensions.requires_auth
 def matching_offers(request_id):
     requested_item_name = api.get_name_of_requested_item_from_requestID(request_id)
+    confirmed_offer_dict = api.get_readable_confirmed_offer_for_requestID(request_id)
     matching_offer_dicts = api.get_readable_matching_offers_for_requestID(request_id)
-    for d in matching_offer_dicts:
-        print(d)
+
     return render_template(
         "matching_offers.html",
         offers=matching_offer_dicts,
         request_id=request_id,
         requested_item_name=requested_item_name,
+        confirmed_offer_dict=confirmed_offer_dict,
     )
+
+
+@bp.route("/myrequests/<request_id>/<offer_number>/<action>")
+@extensions.requires_auth
+def matching_offer_perform_action(request_id, offer_number, action):
+    airtable_username = session["profile"]["name"]
+
+    if action == "accept":
+        result = api.do_offer_confirmation(request_id, offer_number)
+
+    elif action == "reject":
+        result = api.do_offer_rejection(request_id, offer_number)
+
+    if result == False:
+        flash("There was an error; we could not complete the requested action.")
+
+    return redirect(url_for("user.matching_offers", request_id=request_id))
 
 
 @bp.route("/myrequests/<request_id>/<offer_number>")
