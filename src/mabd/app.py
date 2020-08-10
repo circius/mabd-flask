@@ -104,15 +104,26 @@ offers table.
         offer_dict = self.get_airtable("offers").get(offer_id)
         return Offer(offer_dict)
 
+    def get_readable_confirmed_offer_for_requestID(
+        self, request_id: str
+    ) -> Union[dict, bool]:
+        """ consumes a request_id and produces a readable representation of that request's
+confirmed_offer, if one exists, or False if one doesn't.
+        """
+        request_dict = self.get_airtable("requests").get(request_id)
+        return Request(request_dict).get_readable_confirmed_offer(self)
+
     def get_readable_matching_offers_for_requestID(self, request_id: str) -> List[dict]:
         """consumes the ID of a request and produces a list of that request's matching offers,
 represented as dicts with human-readable values.
 """
         request = self.get_record_from_table_by_id("requests", request_id)
-        matching_offer_ids = request.get_field("matching_offers")
+        matching_offer_ids = request.get_matching_offerIDs()
+        confirmed_offer_ids = request.get_field("confirmed_offer")
         matching_offers = [
             self.get_record_from_table_by_id("offers", offer_id)
             for offer_id in matching_offer_ids
+            if offer_id not in confirmed_offer_ids
         ]
         return [offer.get_minimal_representation(self) for offer in matching_offers]
 
@@ -210,13 +221,36 @@ this effect on the airtable.
 
     def update_request(self, request_id: str, update_dict: dict) -> Request:
         """consume a request_id and an update_dicts. produce a copy of the
-corresponding delivery with all fields corresponding to keys in the
+corresponding request with all fields corresponding to keys in the
 dict updated to the corresponding values; as a side-effect, produce
 this effect on the airtable.
 
         """
         request_dict = self.update_record_in_table("requests", request_id, update_dict)
         return Request(request_dict)
+
+    def request_id_do_offer_confirmation(
+        self, request_id: str, offer_number
+    ) -> Union[Request, bool]:
+        """consume a request_id and an offer_number and produce a copy of the corresponding 
+request, with its "confirmed_offer" attribute set to the offer corresponding to offer_number,
+or false if this cannot be done. as a side-effect, produces this effect on the airtable.
+"""
+        request = Request(self.get_request_by_id(request_id))
+        return request.do_offer_confirmation(self, offer_number)
+
+    def request_id_do_offer_rejection(
+        self, request_id: str, offer_number: int
+    ) -> Union[Request, bool]:
+        """consumes an offer number and a username on the airtable, and
+produces the corresponding Offer with the request added to its
+"rejected_for" attribute, if it was previously absent, or False if this was not
+possible.  As a side effect, produces the same effect on the airtable.
+
+        """
+        request = Request(self.get_request_by_id(request_id))
+
+        return request.do_offer_rejection(self, offer_number)
 
     ### setters - offers
 
@@ -271,6 +305,9 @@ class Record(object):
     def __getitem__(self, item):
         return self._record_dict[item]
 
+    def __str__(self):
+        return f"{type(self).__name__} with id {self.get_id()}"
+
     def get_id(self):
         return self._record_id
 
@@ -282,6 +319,13 @@ class Record(object):
 
     def get_columns(self):
         return self._fields.keys()
+
+    def append_value_to_field(self, field, value: any) -> Record:
+        """ consumes a field and a value and produces a copy of myself with
+that value appended to that field. As a side-effect, produces that effect on
+the airtable.
+"""
+        pass
 
     def get_records_from_table_for_ids_in_field(
         self, field_name, table, mabd: MABD
@@ -328,7 +372,11 @@ myself expressed as a dict.
 
         image_records = self.get_field("attachments")
 
-        image_urls = [image_record["url"] for image_record in image_records]
+        image_urls = [
+            image_record["url"]
+            for image_record in image_records
+            if type(image_record) == List
+        ]
 
         dimensions = self.get_field("dimensions")
 
@@ -352,10 +400,27 @@ class Request(Record):
         else:
             return result.pop()
 
-    def get_matching_offerIDs(self) -> list:
-        """ I produce the list of my matching offers.
+    def get_matching_offerIDs(self, filter_matching_and_confirmed=True) -> list:
+        """I produce the list of my matching offers. if
+filter_matching_and_confirmed is True, I ignore members of
+matching_offers that are also member of rejected_offers or of
+confirmed_offer.
+
         """
-        return self.get_field("matching_offers")
+        matching_offers = self.get_field("matching_offers")
+        print(f"my matching offers are {matching_offers}")
+        if not filter_matching_and_confirmed:
+            return matching_offers
+        else:
+            rejected_offers = self.get_field("rejected_offers")
+            confirmed_offer = self.get_field("confirmed_offer")
+            matching_offers_without_rejections = [
+                offer_id
+                for offer_id in matching_offers
+                if offer_id not in rejected_offers + confirmed_offer
+            ]
+
+            return matching_offers_without_rejections
 
     def do_fulfilment(self, mabd: MABD) -> Request:
         """ consume an mabd-state, and produce myself with 
@@ -374,6 +439,67 @@ class Request(Record):
 
         return without_matches
 
+    def do_offer_confirmation(
+        self, mabd: MABD, offer_number: int
+    ) -> Union[Request, bool]:
+        """consumes an mabd-state and an offer-number and produces a copy of
+myself with the offer id corresponding to the offer_number set as the
+single value of my 'confirmed_offer' attribute. As a side-effect, produces the same
+effect on the airtable.
+
+        """
+        print(
+            f"doing offer confirmation for {offer_number} in request {self.__str__()}"
+        )
+        offer = mabd.get_offer_by_offer_number(offer_number)
+
+        update_dict = {"confirmed_offer": offer.get_id()}
+
+        try:
+            request = mabd.update_request(self.get_id(), update_dict)
+        except:
+            print("couldn't do confirmation")
+            return False
+
+        return request
+
+    def do_offer_rejection(self, mabd: MABD, offer_number: int) -> Union[Request, bool]:
+        """consumes an mabd-state and an offer_number and produces a copy of myself with
+the offer id corresponding to the offer_number added to my "rejected_offers" attribute, if 
+it wasn't already there, and removed from my "confirmed_offer" attribute, if it was there.
+As a side-effect produces this effect on the airtable.
+"""
+        offer = mabd.get_offer_by_offer_number(offer_number)
+        offer_id = offer.get_id()
+
+        request_rejections = self.get_field("rejected_offers")
+
+        # add offer_id to request's 'rejected_offers'
+
+        if offer_id not in request_rejections:
+            request_rejections.append(offer_id)
+
+        update_dict = {"rejected_offers": request_rejections}
+
+        try:
+            updated_request = mabd.update_request(self.get_id(), update_dict)
+        except:
+            return False
+
+        # remove rejected offer from 'confirmed_offer', if it's there.
+
+        current_confirmed_offer = self.get_field("confirmed_offer")
+
+        if current_confirmed_offer == [] or current_confirmed_offer[0] != offer_id:
+            print(f"no need to remove {offer_id} from {current_confirmed_offer}")
+            return False
+        else:
+            updated_request = mabd.update_request(
+                self.get_id(), {"confirmed_offer": []}
+            )
+
+        return updated_request
+
     def _set_field(self, mabd: MABD, field_name: str, value: any) -> Request:
         """ consume an mabd-state, a field_name and a value, and produce a copy of myself
         with the corresponding field set to that value.
@@ -382,6 +508,19 @@ class Request(Record):
         """
         updated_request = mabd.update_request(self.get_id(), {field_name: value})
         return Request(updated_request)
+
+    def get_readable_confirmed_offer(self, mabd: MABD) -> Union[dict, bool]:
+        """consumes an mabd-state and produces a readable representation of
+my confirmed offer, or False if I don't have one.
+
+        """
+        confirmed_offer_id_list = self.get_field("confirmed_offer")
+
+        if confirmed_offer_id_list == []:
+            return False
+        else:
+            confirmed_offer = Offer(mabd.get_offer_by_id(confirmed_offer_id_list[0]))
+            return confirmed_offer.get_minimal_representation(mabd)
 
     def get_minimal_representation(self, mabd: MABD) -> dict:
         """consume an mabd-state, and produce a readable representation of
@@ -401,13 +540,17 @@ myself expressed as a dict.
 
         item = self.get_field("item")
 
-        number_of_matching_offers = len(self.get_field("matching_offers"))
+        number_of_matching_offers = len(self.get_matching_offerIDs())
+        print(f"I have {number_of_matching_offers} offers!!")
+
+        confirmed_offer_bool = len(self.get_field("confirmed_offer")) > 0
 
         return {
             "airtable_uid": airtable_uid,
             "item": item,
             "requested_by": requested_by,
             "matching_offers_count": number_of_matching_offers,
+            "confirmed_offer?": confirmed_offer_bool,
         }
 
 

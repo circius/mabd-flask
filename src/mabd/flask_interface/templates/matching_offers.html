@@ -8,15 +8,39 @@
   </ol>
 {% endblock breadcrumbs %}
 {% block content %}
+  {% if confirmed_offer_dict is not false %}
+    <h5>confirmed offer for {{ requested_item_name }}</h5>
+    <ul class="list-group">
+      <li class="list-group-item d-flex-inline p-2">
+        offer {{confirmed_offer_dict['offer_number']}}:
+        <a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=confirmed_offer_dict['offer_number']) }}">
+          {{confirmed_offer_dict['item_name']}}
+        </a>
+        <div>
+          <a class="btn btn-warning" href="{{ url_for('user.matching_offer_perform_action', request_id=request_id, offer_number=confirmed_offer_dict['offer_number'], action="reject")}}">
+            ✗ reject
+          </a>
+        </div>
+      </li>
+    </ul>
+  {% endif %}
   <h5>matching offers for {{ requested_item_name }}</h5>
   <ul class="list-group">
     {% for offer in offers %}
-    <li class="list-group-item">
-      offer {{offer['offer_number']}}:
-      <a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=offer['offer_number']) }}">
-        {{offer['item_name']}} 
-      </a>
-    </li>
+      <li class="list-group-item d-flex-inline p-2">
+        offer {{offer['offer_number']}}:
+        <a href="{{ url_for('user.matching_offer_details', request_id=request_id, offer_number=offer['offer_number']) }}">
+          {{offer['item_name']}} 
+        </a>
+        <div>
+          <a class="btn btn-success" href="{{ url_for('user.matching_offer_perform_action', request_id=request_id, offer_number=offer['offer_number'], action="accept")}}">
+            ✔ accept
+          </a>
+          <a class="btn btn-warning" href="{{ url_for('user.matching_offer_perform_action', request_id=request_id, offer_number=offer['offer_number'], action="reject")}}">
+            ✗ reject
+          </a>
+        </div>
+      </li>
     {% endfor %}
   </ul>
 {% endblock content %}

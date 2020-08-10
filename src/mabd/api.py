@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from mabd.app import MABD, Delivery, Request
+from mabd.app import MABD, Delivery, Request, Offer
 
 
 def get_readable_unfulfilled_deliveries() -> List[dict]:
@@ -68,9 +68,42 @@ readable values.
     return interface.get_readable_matching_offers_for_requestID(request_id)
 
 
+def get_readable_confirmed_offer_for_requestID(request_id: str) -> Union[dict, bool]:
+    """consumes the id of an open request and produces a readable
+representation of the corresponding request's confirmed offer, represented as
+dicts with readable values; or False, if there is no such offer.
+
+    """
+    interface = MABD()
+    return interface.get_readable_confirmed_offer_for_requestID(request_id)
+
+
 def get_readable_offer_by_offer_number(offer_number: int) -> dict:
     """ consumes an offer-uid and produces the corresponding offer, 
 represented as a readable dict.
 """
     interface = MABD()
     return interface.get_readable_offer_by_offer_number(offer_number)
+
+
+def do_offer_rejection(request_id: str, offer_number: int) -> Union[Offer, bool]:
+    """consumes a request_id and an offer number, and produces the
+corresponding request with the corresponding offer appended to its
+"rejected_offers" attribute, if it was previously absent, or False if
+this was not possible. As a side effect, produces the same effect on
+the airtable.
+
+    """
+    interface = MABD()
+    return interface.request_id_do_offer_rejection(request_id, offer_number)
+
+
+def do_offer_confirmation(request_id: str, offer_number: int) -> Union[Offer, bool]:
+    """consumes a request_id and an offer number, and produces the
+corresponding Request with the corresponding offer added to its
+"rejected offers" attribute, if it was previously absent, or False if
+this was not possible. As a side effect, produces the same effect on the airtable.
+
+    """
+    interface = MABD()
+    return interface.request_id_do_offer_confirmation(request_id, offer_number)

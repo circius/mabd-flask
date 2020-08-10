@@ -11,20 +11,26 @@
     {% for request in requests_with_offers %}
       <li class="list-group-item">
         <a href="{{ url_for('user.matching_offers', request_id=request['airtable_uid']) }}">
-          {{request['item']}}</a>. ({{request['matching_offers_count']}}
-          {% if request['matching_offers_count'] > 1 %}
-            offers)
-          {% else %}
-            offer)
+          {{request['item']}}</a>.
+          (
+          {% if request['confirmed_offer?'] %}
+            1 confirmed offer; 
           {% endif %}
+          {{request['matching_offers_count']}} matching
+          {% if request['matching_offers_count'] > 1 %}
+            offers
+          {% else %}
+            offer
+          {% endif %}
+          )
       </li>
     {% endfor %}
   </ul>
   <hr />
   <h5>requests with no matching offers</h2>
-  <ul class="list-group">
-    {% for request in requests_no_offers %}
-      <li class="list-group-item"> {{request['item']}} </li>
-    {% endfor %}
-  </ul>
+<ul class="list-group">
+  {% for request in requests_no_offers %}
+    <li class="list-group-item"> {{request['item']}} </li>
+  {% endfor %}
+</ul>
 {% endblock content %}
