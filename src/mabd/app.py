@@ -375,7 +375,7 @@ myself expressed as a dict.
         image_urls = [
             image_record["url"]
             for image_record in image_records
-            if type(image_record) == List
+            if type(image_record) == dict
         ]
 
         dimensions = self.get_field("dimensions")

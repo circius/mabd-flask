@@ -5,9 +5,11 @@ Are you sure you want to delete user {{ user_id }}, with email {{ user_email }}?
 <form action="" method="post">
   <button type="submit"
           name="confirm_or_cancel"
-          value="confirm"> confirm </button>
+          value="confirm"
+          class="btn btn-danger"> confirm </button>
   <button type="submit"
           name="confirm_or_cancel"
-          value="cancel"> cancel </button>
+          value="cancel"
+          class="btn btn-light"> cancel </button>
   </form>
 {% endblock content %}

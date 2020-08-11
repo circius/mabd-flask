@@ -32,7 +32,7 @@ def auth_callback():
     session["profile"] = {
         "user_id": userinfo["sub"],
         "name": userinfo["name"],
-        "picture": userinfo["picture"],
+        "airtable_userid": userinfo["nickname"],
     }
     message = "logged in"
     flash(message)
@@ -123,6 +123,8 @@ def matching_offer_perform_action(request_id, offer_number, action):
 @extensions.requires_auth
 def matching_offer_details(request_id, offer_number):
     matching_offer = api.get_readable_offer_by_offer_number(offer_number)
+    print(matching_offer['image_urls'])
+    print(matching_offer)
     return render_template(
         "matching_offer_details.html", offer=matching_offer, request_id=request_id
     )

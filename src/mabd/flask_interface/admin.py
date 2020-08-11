@@ -48,7 +48,7 @@ def fulfil_deliveries():
 @extensions.requires_auth
 @extensions.must_be_admin
 def user_management():
-    useful_keys = ["user_id", "email", "nickname", "app_metadata"]
+    useful_keys = ["user_id", "name", "email"]
 
     def user_get_useful_subset(userdict):
         result_dict = {k: None for k in useful_keys}
@@ -79,26 +79,22 @@ def user_management():
 def user_management_id(urlsafe_id):
     auth0_id = urlsafe_id.replace("%7C", "|")
 
-    def update_user(id, nickname, airtable_username):
+    def update_user(id, name):
         update_body = {
-            "nickname": nickname,
-            "app_metadata": {"airtable_username": airtable_username},
+            "name": name,
         }
         auth0.auth0.users.update(id, update_body)
 
     if request.method == "POST":
-        nickname = request.form["nickname"]
-        airtable_username = request.form["airtable_username"]
-        update_user(auth0_id, nickname, airtable_username)
+        name = request.form["name"]
+        update_user(auth0_id, name)
 
         return redirect(url_for("admin.user_management"))
 
-    required_fields = ["user_id", "email", "nickname", "app_metadata"]
+    required_fields = ["user_id", "email", "name"]
     current_user_data = auth0.auth0.users.get(
         auth0_id, fields=required_fields, include_fields=True
     )
-    if "app_metadata" not in current_user_data.keys():
-        current_user_data["app_metadata"] = None
     return render_template("admin_user_management_id.html", user_dict=current_user_data)
 
 
@@ -123,20 +119,17 @@ def user_management_delete(urlsafe_id):
 @extensions.requires_auth
 @extensions.must_be_admin
 def user_management_add():
-    def add_user(email, nickname, airtable_username):
+    def add_user(email, display_name):
         create_body = {
             "email": email,
-            "nickname": nickname,
-            "app_metadata": {"airtable_username": airtable_username},
-            "connection": "email",
+            "name": display_name
         }
         return auth0.auth0.users.create(create_body)
 
     if request.method == "POST":
         email = request.form["email"]
-        nickname = request.form["nickname"]
-        airtable_username = request.form["airtable_username"]
-        new_user = add_user(email, nickname, airtable_username)
+        display_name = request.form["display_name"]
+        new_user = add_user(email, name)
         return redirect(url_for("admin.user_management"))
 
     return render_template("admin_user_management_add.html")
