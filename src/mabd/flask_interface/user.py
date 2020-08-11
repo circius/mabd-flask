@@ -68,7 +68,7 @@ def my_requests():
     except:
         error = "This account is misconfigured. Please contact us to sort it out."
         flash(error)
-        redirect("user.index")
+        return redirect(url_for("user.index"))
 
     requests_with_matching_offers = [
         request for request in requests if request["matching_offers_count"] > 0
