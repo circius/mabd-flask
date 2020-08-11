@@ -122,14 +122,15 @@ def user_management_add():
     def add_user(email, display_name):
         create_body = {
             "email": email,
-            "name": display_name
+            "name": display_name,
+            "connection": "email"
         }
         return auth0.auth0.users.create(create_body)
 
     if request.method == "POST":
         email = request.form["email"]
         display_name = request.form["display_name"]
-        new_user = add_user(email, name)
+        new_user = add_user(email, display_name)
         return redirect(url_for("admin.user_management"))
 
     return render_template("admin_user_management_add.html")
