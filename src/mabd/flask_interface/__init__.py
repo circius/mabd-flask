@@ -10,6 +10,10 @@ from .. import utilities
 def create_app():
     app = Flask(__name__)
 
+    log = logging.getLogger('authlib')
+    log.addHandler(logging.StreamHandler(sys.stdout))
+    log.setLevel(logging.DEBUG)
+
     extensions.oauth.init_app(app)
 
     config_to_load = os.getenv("CONFIG_TO_LOAD")
