@@ -61,6 +61,8 @@ def logout():
 @bp.route("/myrequests")
 @extensions.requires_auth
 def my_requests():
+    def link_to_offer_detail_p(request):
+        return (request["matching_offers_count"] > 0) or (request["confirmed_offer?"]) 
     airtable_username = session["profile"]["name"]
 
     try:
@@ -71,7 +73,7 @@ def my_requests():
         return redirect(url_for("user.index"))
 
     requests_with_matching_offers = [
-        request for request in requests if request["matching_offers_count"] > 0
+        request for request in requests if link_to_offer_detail_p(request)
     ]
 
     requests_no_matching_offers = [
