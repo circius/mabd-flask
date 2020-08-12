@@ -13,14 +13,6 @@
 {% endblock breadcrumbs %}
 {% block content %}
   <h5>details for {{offer['item_name']}}</h5>
-  <div>
-    <a class="btn btn-success" href="{{ url_for('user.matching_offer_perform_action', request_id=request_id, offer_number=offer['offer_number'], action="accept")}}">
-      ✔ accept
-    </a>
-    <a class="btn btn-warning" href="{{ url_for('user.matching_offer_perform_action', request_id=request_id, offer_number=offer['offer_number'], action="reject")}}">
-      ✗ reject
-    </a>
-  </div>
   dimensions: 
   {% if offer['dimensions'] != []  %}
     {{ dimensions }}
