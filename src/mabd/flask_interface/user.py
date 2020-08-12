@@ -117,6 +117,8 @@ def matching_offer_perform_action(request_id, offer_number, action):
 
     if result == False:
         flash("There was an error; we could not complete the requested action.")
+    else:
+        flash(message)
         
 
     return redirect(url_for("user.matching_offers", request_id=request_id))
