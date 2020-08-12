@@ -53,7 +53,7 @@ def logout():
     # Redirect user to logout endpoint
     params = {
         "returnTo": url_for("user.index", _external=True),
-        "client_id": config.AUTH0_CLIENT_ID
+        "client_id": os.getenv("AUTH0_CLIENT_ID")
     }
     return redirect(extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params))
 
