@@ -8,7 +8,7 @@ from six.moves.urllib.parse import urlencode
 
 from .. import api
 
-from . import extensions, auth0
+from . import extensions, auth0, config
 
 bp = Blueprint("user", __name__)
 
@@ -53,7 +53,7 @@ def logout():
     # Redirect user to logout endpoint
     params = {
         "returnTo": url_for("user.index", _external=True),
-        "client_id": "w26ToAcyeH5MUxPrg4SmB3W7ydD4fzS0",
+        "client_id": config.AUTH0_CLIENT_ID
     }
     return redirect(extensions.auth0.api_base_url + "/v2/logout?" + urlencode(params))
 

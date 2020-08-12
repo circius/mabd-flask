@@ -11,7 +11,6 @@ oauth = OAuth()
 
 auth0 = oauth.register("auth0")  # get settings from app.config
 
-
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
