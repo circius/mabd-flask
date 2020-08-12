@@ -109,12 +109,17 @@ def matching_offer_perform_action(request_id, offer_number, action):
 
     if action == "accept":
         result = api.do_offer_confirmation(request_id, offer_number)
+        message = "thank you for confirming an offer. we'll be in touch soon to arrange
+delivery."
 
     elif action == "reject":
         result = api.do_offer_rejection(request_id, offer_number)
+        message = "we've removed the offer you rejected from your list of matching
+offers. thank you."
 
     if result == False:
         flash("There was an error; we could not complete the requested action.")
+        
 
     return redirect(url_for("user.matching_offers", request_id=request_id))
 
